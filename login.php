@@ -117,13 +117,11 @@
     }
     ?>
     <script>
-        // Selecting elements for switching between forms
         const switchToRegisterLinks = document.querySelectorAll('.switch-to-register');
         const switchToLoginLinks = document.querySelectorAll('.switch-to-login');
         const loginForm = document.querySelector('.login');
         const registerForm = document.querySelector('.register');
 
-        // Function to show the login form
         switchToLoginLinks.forEach(link => {
             link.addEventListener("click", () => {
                 loginForm.style.display = 'block';
@@ -131,7 +129,6 @@
             });
         });
 
-        // Function to show the register form
         switchToRegisterLinks.forEach(link => {
             link.addEventListener("click", () => {
                 loginForm.style.display = 'none';
