@@ -28,50 +28,45 @@ if (!$user || $user['role'] != 'Admin') {
 
 if (isset($_POST["submit"])) {
 
-    $title = $_POST["title"];
+    $name = $_POST["name"];
     $discription = $_POST["description"];
-    $url = $_POST["url"];
-    $categorie = $_POST["categorie"];
 
-    $aj = new Cours($title, $discription, $url, $categorie);
-    $aj->AjouterCours($conn);
-    header("location:gestionCour.php");
+    $aj = new Categorie($name, $discription);
+    $aj->AjouterCategorie($conn);
+    header("location:gestionCategorie.php");
 }
 
 if (isset($_GET["Edit"])) {
     $id = $_GET["Edit"];
-    $query = "SELECT * FROM course WHERE course_id = :id";
+    $query = "SELECT * FROM category WHERE category_id = :id";
     $stmt = $conn->prepare($query);
     $stmt->bindParam(':id', $id, PDO::PARAM_INT);
     $stmt->execute();
-    $cours = $stmt->fetch(PDO::FETCH_ASSOC);
+    $categorie = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $title = $cours["title"];
-    $description = $cours["description"];
-    $url = $cours["conent_url"];
-    $categorie = $cours["category_id"];
+    $name = $categorie["name"];
+    $description = $categorie["description"];
+
 }
 
 if (isset($_POST["Edit"])) {
     $id = $_GET["Edit"];
-    $title = $_POST["title"];
+    $name = $_POST["name"];
     $discription = $_POST["description"];
-    $url = $_POST["url"];
-    $categorie = $_POST["categorie"];
 
-    $edit = new Cours($title, $discription, $url, $categorie);
-    // $edit->editProduit($conn, $id);
-    header("location:gestionCour.php");
+    $edit = new Categorie($name, $discription);
+    $edit->editCategorie($conn, $id);
+    header("location:gestionCategorie.php");
 }
 
 if (isset($_GET["Delet"])) {
     $id = $_GET["Delet"];
-    $Delet = new Cours(null, null, null, null);
-    // $Delet->deletProduit($conn, $id);
+    $Delet = new Categorie(null, null);
+    $Delet->deletCategorie($conn, $id);
 }
 
 if (isset($_POST["reset"])) {
-    header("location:gestionCour.php");
+    header("location:gestionCategorie.php");
 }
 ?>
 
@@ -126,7 +121,7 @@ if (isset($_POST["reset"])) {
                         <span class="title">Les etudiants</span>
                     </a>
                 </li>
-                <li class="hovered">
+                <li>
                     <a href="gestionCour.php">
                         <span class="icon">
                             <ion-icon name="library-outline"></ion-icon>
@@ -134,7 +129,7 @@ if (isset($_POST["reset"])) {
                         <span class="title">Gestion des cours</span>
                     </a>
                 </li>
-                <li>
+                <li class="hovered">
                     <a href="gestionCategorie.php">
                         <span class="icon">
                             <ion-icon name="book-outline"></ion-icon>
@@ -175,12 +170,12 @@ if (isset($_POST["reset"])) {
             </div>
             <!-- ================ Details List ================= -->
             <div class="details">
-                <form action="" method="post" enctype="multipart/form-data">
+            <form action="" method="post">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="title">title:</label>
-                            <input type="text" id="title" name="title"
-                                value="<?php echo isset($title) ? htmlspecialchars($title) : ''; ?>" required>
+                            <label for="name">Name:</label>
+                            <input type="text" id="name" name="name"
+                                value="<?php echo isset($name) ? htmlspecialchars($name) : ''; ?>" required>
                         </div>
                         <div class="form-group">
                             <label for="description">description:</label>
@@ -189,51 +184,38 @@ if (isset($_POST["reset"])) {
                             </textarea>
                         </div>
                         <div class="form-group">
-                            <label for="url">content url:</label>
-                            <input type="text" id="url" name="url"
-                                value="<?php echo isset($url) ? htmlspecialchars($url) : ''; ?>" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="Categorie">Categorie:</label>
-                            <input type="text" id="Categorie" name="categorie"
-                                value="<?php echo isset($Categorie) ? htmlspecialchars($Categorie) : ''; ?>" required>
-                        </div>
-                        <div class="form-group">
-                            <?php
+                        <?php
                             if (isset($_GET['Edit'])) {
-                                echo '<input type="submit" name="Edit" value="Edit Cour" class="btn">';
+                                echo '<input type="submit" name="Edit" value="Edit Categorie" class="btn">';
                             } else {
-                                echo '<input type="submit" name="submit" value="Submit Cour" class="btn">';
+                                echo '<input type="submit" name="submit" value="Submit Categorie" class="btn">';
                             }
                             ?>
                         </div>
                     </div>
                 </form>
-                <div class="cardHeader">
-                    <h2>Les Enseignants</h2>
+                    <div class="cardHeader">
+                        <h2>Les categories</h2>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <td class="idproduit">id</td>
+                                <td>name</td>
+                                <td>description</td>
+                                <td>action</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $p = new Categorie(null ,null );
+                            $p->affichageCategorie($conn);
+                            ?>
+                        </tbody>
+                    </table>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <td class="id">id</td>
-                            <td>title</td>
-                            <td>description</td>
-                            <td>content url</td>
-                            <td>Categorie</td>
-                            <td>date</td>
-                            <td>action</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        $p = new Cours(null, null, null, null);
-                        $p->affichageCours($conn);
-                        ?>
-                    </tbody>
-                </table>
             </div>
         </div>
-    </div>
     </div>
     <!-- =========== Scripts =========  -->
     <script src="./assets/js/script.js?v=1"></script>

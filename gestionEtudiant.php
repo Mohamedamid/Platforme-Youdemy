@@ -6,6 +6,32 @@ include_once("./classes/Enseignant.php");
 include_once("./classes/Cours.php");
 include_once("./classes/Categorie.php");
 include_once("./classes/Tag.php");
+session_start();
+
+if (!isset($_SESSION['user_email'])) {
+    header("Location: login.php");
+    exit();
+}
+
+$user_email = $_SESSION['user_email'];
+
+$sql = "SELECT username, email, role FROM user WHERE email = :email";
+$stmt = $conn->prepare($sql);
+$stmt->execute([':email' => $user_email]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$user || $user['role'] != 'Admin') {
+    header("Location: login.php");
+    exit();
+}
+
+if (isset($_GET["idEdit"])) {
+    $idd = $_GET["idEdit"];
+    $statut = $_GET["statut"];
+ 
+    $Stat = new enseignant(null, null, null,null);
+    $Stat->updateStatut($conn, $idd, $statut);
+}
 ?>
 
 <!DOCTYPE html>
@@ -127,7 +153,7 @@ include_once("./classes/Tag.php");
                 <table>
                     <thead>
                         <tr>
-                            <td>id</td>
+                            <!-- <td>id</td> -->
                             <td>Name</td>
                             <td>email</td>
                             <td>statut</td>
@@ -137,8 +163,8 @@ include_once("./classes/Tag.php");
                     </thead>
                     <tbody>
                         <?php
-                        // $p = new Product(null, null, null, null, null);
-                        // $p->affichage($conn);
+                        $etudiant = new etudiant(null, null, null, null);
+                        $etudiant->affichageEtudiant($conn);
                         ?>
                     </tbody>
                 </table>
@@ -147,7 +173,7 @@ include_once("./classes/Tag.php");
     </div>
     </div>
     <!-- =========== Scripts =========  -->
-    <script src="assets/js/main.js?v=1"></script>
+    <script src="./assets/js/script.js?v=1"></script>
     <!-- ====== ionicons ======= -->
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>

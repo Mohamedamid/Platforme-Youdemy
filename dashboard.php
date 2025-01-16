@@ -6,6 +6,25 @@ include_once("./classes/Enseignant.php");
 include_once("./classes/Cours.php");
 include_once("./classes/Categorie.php");
 include_once("./classes/Tag.php");
+
+session_start();
+
+if (!isset($_SESSION['user_email'])) {
+    header("Location: login.php");
+    exit();
+}
+
+$user_email = $_SESSION['user_email'];
+
+$sql = "SELECT username, email, role FROM user WHERE email = :email";
+$stmt = $conn->prepare($sql);
+$stmt->execute([':email' => $user_email]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$user || $user['role'] != 'Admin') {
+    header("Location: login.php");
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -165,7 +184,7 @@ include_once("./classes/Tag.php");
                     <div>
                         <div class="numbers">
                             <?php
-                            $total = new Cours();
+                            $total = new Cours(null ,null ,null ,null);
                             $total->affichagetotalcour($conn);
                             ?>
                         </div>
@@ -187,6 +206,20 @@ include_once("./classes/Tag.php");
                     </div>
                     <div class="iconBx">
                         <ion-icon name="book-outline"></ion-icon>
+                    </div>
+                </div>
+                <div class="card">
+                    <div>
+                        <div class="numbers">
+                            <?php
+                            $tags = new Tag(null);
+                            $tags->affichagetotalTag($conn);
+                            ?>
+                            <div class="cardName">Les tags</div>
+                        </div>
+                    </div>
+                    <div class="iconBx">
+                        <ion-icon name="pricetags-outline"></ion-icon>
                     </div>
                 </div>
                 <div class="card">
@@ -291,7 +324,7 @@ include_once("./classes/Tag.php");
             }
         });
     </script>
-    <script src="assets/js/main.js?v=1"></script>
+    <script src="./assets/js/script.js?v=1"></script>
     <!-- ====== ionicons ======= -->
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
