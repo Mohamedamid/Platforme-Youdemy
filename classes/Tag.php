@@ -13,5 +13,13 @@ class Tag{
         $stmt->bindParam(':name', $this->name, PDO::PARAM_STR);
         $stmt->execute();
     }
+
+    function affichagetotalTag($conn){
+        $query = "SELECT COUNT(*) AS total_tag FROM tag";
+        $stmt = $conn->query($query);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $totaltags = $row['total_tag'];
+        echo $totaltags;
+    }
 }
 ?>

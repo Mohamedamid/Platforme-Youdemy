@@ -1,8 +1,11 @@
-<?php 
+<?php
 include_once("./config/config.php");
 include_once("./classes/Users.php");
 include_once("./classes/Etudiant.php");
 include_once("./classes/Enseignant.php");
+include_once("./classes/Cours.php");
+include_once("./classes/Categorie.php");
+include_once("./classes/Tag.php");
 ?>
 
 <!DOCTYPE html>
@@ -12,6 +15,7 @@ include_once("./classes/Enseignant.php");
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>Académie d'Apprentissage</title>
     <!-- ======= Styles ====== -->
     <link rel="stylesheet" href="./assets/style/dashboard.css">
@@ -20,12 +24,75 @@ include_once("./classes/Enseignant.php");
             text-align: center !important;
             border: 1px solid black;
         }
-        .idproduit{
-            display: none; 
+
+        .idproduit {
+            display: none;
         }
-        td{
+
+        td {
             padding: 15px;
         }
+
+        #platformStatsChart, #platformStatsChart1 {
+            width: 100% !important;
+            height: 300px !important;
+        }
+
+        .statistique {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 20px;
+        }
+        
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+input[type="text"],
+input[type="number"],
+.btn {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    margin: 10px 0;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+    border-color: #007BFF;
+    outline: none;
+}
+
+.btn {
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 30px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+
     </style>
 </head>
 
@@ -50,8 +117,8 @@ include_once("./classes/Enseignant.php");
                         <span class="title">Accueil</span>
                     </a>
                 </li>
-                <li  class="hovered">
-                    <a href="PageEnseignant.php">
+                <li class="hovered">
+                    <a href="gestionEnseignant.php">
                         <span class="icon">
                             <ion-icon name="people-outline"></ion-icon>
                         </span>
@@ -59,7 +126,7 @@ include_once("./classes/Enseignant.php");
                     </a>
                 </li>
                 <li>
-                    <a href="command.php">
+                    <a href="gestionEtudiant.php">
                         <span class="icon">
                             <ion-icon name="school-outline"></ion-icon>
                         </span>
@@ -67,11 +134,27 @@ include_once("./classes/Enseignant.php");
                     </a>
                 </li>
                 <li>
-                    <a href="gestionProduit.php">
+                    <a href="gestionCour.php">
                         <span class="icon">
                             <ion-icon name="library-outline"></ion-icon>
                         </span>
                         <span class="title">Gestion des cours</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="gestionCategorie.php">
+                        <span class="icon">
+                            <ion-icon name="book-outline"></ion-icon>
+                        </span>
+                        <span class="title">Gestion des categories</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="gestionTag.php">
+                        <span class="icon">
+                            <ion-icon name="pricetags-outline"></ion-icon>
+                        </span>
+                        <span class="title">Gestion des tags</span>
                     </a>
                 </li>
                 <li>
@@ -97,67 +180,38 @@ include_once("./classes/Enseignant.php");
                     </label>
                 </div>
             </div>
-            <!-- ======================= Cards ================== -->
-            <div class="cardBox">
-                <div class="card">
-                    <div>
-                        <div class="numbers">
-                            <?php
-                            $enseignants = new enseignant(null, null, null, null);
-                            $enseignants->affichagetotalenseignant( $conn);
-                            ?>
-                            <div class="cardName">Les Enseignants</div>  
-                        </div>
-                    </div>
-                    <div class="iconBx">
-                        <ion-icon name="people-outline"></ion-icon>
-                    </div>
-                </div>
-                <div class="card">
-                    <div>
-                        <div class="numbers">
-                            <?php
-                            $enseignants = new etudiant(null, null, null, null);
-                            $enseignants->affichagetotaletudiant( $conn);
-                            ?>
-                        </div>
-                        <div class="cardName">Les etudiants</div>
-                    </div>
-                    <div class="iconBx">
-                        <ion-icon name="school-outline"></ion-icon>
-                    </div>
-                </div>
-                <div class="card">
-                    <div>
-                        <div class="numbers">
-                            <?php
-                            // $total = new commande(null, null, null);
-                            // $total->affichagetotal($conn);
-                            ?>
-                        </div>
-                        <div class="cardName">Les Commande</div>
-                    </div>
-                    <div class="iconBx">
-                        <ion-icon name="library-outline"></ion-icon>
-                    </div>
-                </div>
-            </div>
-            <!-- ================ Order Details List ================= -->
+            <!-- ================ Details List ================= -->
             <div class="details">
-                <div class="recentOrders">
+            <form action="" method="post" enctype="multipart/form-data">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="name">Name:</label>
+                            <input type="text" id="name" name="name"
+                                value="<?php echo isset($name) ? htmlspecialchars($name) : ''; ?>" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">email:</label>
+                            <input type="text" id="email" name="email"
+                                value="<?php echo isset($email) ? htmlspecialchars($email) : ''; ?>"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" name="Edit" value="Edit Order" class="btn">
+                        </div>
+                    </div>
+                </form>
                     <div class="cardHeader">
-                        <h2>Recent Orders</h2>
+                        <h2>Les Enseignants</h2>
                     </div>
                     <table>
                         <thead>
                             <tr>
-                                <td class="idproduit">id</td>
+                                <td>id</td>
                                 <td>Name</td>
-                                <td>image</td>
-                                <td>description</td>
-                                <td>price</td>
-                                <td style="width: 90px;">quantity</td>
-                                <td class="idproduit">action</td>
+                                <td>email</td>
+                                <td>statut</td>
+                                <td>date inscription</td>
+                                <td>action</td>
                             </tr>
                         </thead>
                         <tbody>

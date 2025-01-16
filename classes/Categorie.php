@@ -16,6 +16,14 @@ class Categorie{
         $stmt->bindParam(':email', $this->description, PDO::PARAM_STR);
         $stmt->execute();
     }
+
+    function affichagetotalCategorie($conn){
+        $query = "SELECT COUNT(*) AS total_categorie FROM category";
+        $stmt = $conn->query($query);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $totalcategories = $row['total_categorie'];
+        echo $totalcategories;
+    }
 }
 
 ?>

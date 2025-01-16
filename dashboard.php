@@ -4,6 +4,8 @@ include_once("./classes/Users.php");
 include_once("./classes/Etudiant.php");
 include_once("./classes/Enseignant.php");
 include_once("./classes/Cours.php");
+include_once("./classes/Categorie.php");
+include_once("./classes/Tag.php");
 ?>
 
 <!DOCTYPE html>
@@ -67,7 +69,7 @@ include_once("./classes/Cours.php");
                     </a>
                 </li>
                 <li>
-                    <a href="PageEnseignant.php">
+                    <a href="gestionEnseignant.php">
                         <span class="icon">
                             <ion-icon name="people-outline"></ion-icon>
                         </span>
@@ -75,7 +77,7 @@ include_once("./classes/Cours.php");
                     </a>
                 </li>
                 <li>
-                    <a href="command.php">
+                    <a href="gestionEtudiant.php">
                         <span class="icon">
                             <ion-icon name="school-outline"></ion-icon>
                         </span>
@@ -83,11 +85,27 @@ include_once("./classes/Cours.php");
                     </a>
                 </li>
                 <li>
-                    <a href="gestionProduit.php">
+                    <a href="gestionCour.php">
                         <span class="icon">
                             <ion-icon name="library-outline"></ion-icon>
                         </span>
                         <span class="title">Gestion des cours</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="gestionCategorie.php">
+                        <span class="icon">
+                            <ion-icon name="book-outline"></ion-icon>
+                        </span>
+                        <span class="title">Gestion des categories</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="gestionTag.php">
+                        <span class="icon">
+                            <ion-icon name="pricetags-outline"></ion-icon>
+                        </span>
+                        <span class="title">Gestion des tags</span>
                     </a>
                 </li>
                 <li>
@@ -147,14 +165,42 @@ include_once("./classes/Cours.php");
                     <div>
                         <div class="numbers">
                             <?php
-                            // $total = new commande(null, null, null);
-                            // $total->affichagetotal($conn);
+                            $total = new Cours();
+                            $total->affichagetotalcour($conn);
                             ?>
                         </div>
-                        <div class="cardName">Les Commande</div>
+                        <div class="cardName">Les cours</div>
                     </div>
                     <div class="iconBx">
                         <ion-icon name="library-outline"></ion-icon>
+                    </div>
+                </div>
+                <div class="card">
+                    <div>
+                        <div class="numbers">
+                            <?php
+                            $categories = new Categorie(null, null);
+                            $categories->affichagetotalCategorie($conn);
+                            ?>
+                            <div class="cardName">Les categories</div>
+                        </div>
+                    </div>
+                    <div class="iconBx">
+                        <ion-icon name="book-outline"></ion-icon>
+                    </div>
+                </div>
+                <div class="card">
+                    <div>
+                        <div class="numbers">
+                            <?php
+                            $tags = new Tag(null);
+                            $tags->affichagetotalTag($conn);
+                            ?>
+                            <div class="cardName">Les tags</div>
+                        </div>
+                    </div>
+                    <div class="iconBx">
+                        <ion-icon name="pricetags-outline"></ion-icon>
                     </div>
                 </div>
             </div>
@@ -182,7 +228,7 @@ include_once("./classes/Cours.php");
         var platformStatsChart = new Chart(ctx1, {
             type: 'bar',
             data: {
-                labels: ['Total enseignant', 'Total etudiant', 'Total cour'],
+                labels: ['Total enseignant', 'Total etudiant', 'Total cour', 'Total categorie', 'total tag'],
                 datasets: [{
                     label: 'Platform Stats',
                     data: [<?php
@@ -191,16 +237,22 @@ include_once("./classes/Cours.php");
                     ?>, <?php
                     $etudiants = new etudiant(null, null, null, null);
                     $etudiants->affichagetotaletudiant($conn);
-                    ?>, 20
+                    ?>,<?php
+                    $categories = new $categories(null, null);
+                    $categories->affichagetotalCategorie($conn);
+                    ?>,<?php
+                    $tags = new Tag(null);
+                    $tags->affichagetotalTag($conn);
+                    ?>
                     ],
-                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#FF9F40', '#FF5733'],
                 }]
             },
             options: {
                 responsive: true,
                 plugins: {
                     legend: {
-                        position: 'top',
+                        position: 'none',
                     }
                 }
             }
@@ -209,7 +261,7 @@ include_once("./classes/Cours.php");
         var platformStatsChart = new Chart(ctx2, {
             type: 'pie',
             data: {
-                labels: ['Total Users', 'Total Articles', 'Total Categories'],
+                labels: ['Total Users', 'Total Articles', 'Total Categories', 'Total categorie', 'total tag'],
                 datasets: [{
                     label: 'Platform Stats',
                     data: [<?php
@@ -218,12 +270,15 @@ include_once("./classes/Cours.php");
                     ?>, <?php
                     $etudiants = new etudiant(null, null, null, null);
                     $etudiants->affichagetotaletudiant($conn);
-                    ?>, <?php
-                    $etudiants = new Cours();
-                    $etudiants->affichagetotalcour($conn);
+                    ?>,<?php
+                    $categories = new $categories(null, null);
+                    $categories->affichagetotalCategorie($conn);
+                    ?>,<?php
+                    $tags = new Tag(null);
+                    $tags->affichagetotalTag($conn);
                     ?>
                     ],
-                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#FF9F40', '#FF5733'],
                 }]
             },
             options: {
