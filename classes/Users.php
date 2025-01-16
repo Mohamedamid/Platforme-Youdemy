@@ -12,7 +12,6 @@ class User{
         $this->email = $email;
         $this->password = $password;
         $this->role = $role;
-        // $this->statut = $statut;
     }
 
     function login($conn)

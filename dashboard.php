@@ -1,8 +1,9 @@
-<?php 
+<?php
 include_once("./config/config.php");
 include_once("./classes/Users.php");
 include_once("./classes/Etudiant.php");
 include_once("./classes/Enseignant.php");
+include_once("./classes/Cours.php");
 ?>
 
 <!DOCTYPE html>
@@ -12,6 +13,7 @@ include_once("./classes/Enseignant.php");
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>Académie d'Apprentissage</title>
     <!-- ======= Styles ====== -->
     <link rel="stylesheet" href="./assets/style/dashboard.css">
@@ -20,11 +22,25 @@ include_once("./classes/Enseignant.php");
             text-align: center !important;
             border: 1px solid black;
         }
-        .idproduit{
-            display: none; 
+
+        .idproduit {
+            display: none;
         }
-        td{
+
+        td {
             padding: 15px;
+        }
+
+        #platformStatsChart, #platformStatsChart1 {
+            width: 100% !important;
+            height: 300px !important;
+        }
+
+        .statistique {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 20px;
         }
     </style>
 </head>
@@ -104,9 +120,9 @@ include_once("./classes/Enseignant.php");
                         <div class="numbers">
                             <?php
                             $enseignants = new enseignant(null, null, null, null);
-                            $enseignants->affichagetotalenseignant( $conn);
+                            $enseignants->affichagetotalenseignant($conn);
                             ?>
-                            <div class="cardName">Les Enseignants</div>  
+                            <div class="cardName">Les Enseignants</div>
                         </div>
                     </div>
                     <div class="iconBx">
@@ -118,7 +134,7 @@ include_once("./classes/Enseignant.php");
                         <div class="numbers">
                             <?php
                             $enseignants = new etudiant(null, null, null, null);
-                            $enseignants->affichagetotaletudiant( $conn);
+                            $enseignants->affichagetotaletudiant($conn);
                             ?>
                         </div>
                         <div class="cardName">Les etudiants</div>
@@ -146,32 +162,80 @@ include_once("./classes/Enseignant.php");
             <div class="details">
                 <div class="recentOrders">
                     <div class="cardHeader">
-                        <h2>Recent Orders</h2>
+                        <h2>Statistics</h2>
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <td class="idproduit">id</td>
-                                <td>Name</td>
-                                <td>image</td>
-                                <td>description</td>
-                                <td>price</td>
-                                <td style="width: 90px;">quantity</td>
-                                <td class="idproduit">action</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            // $p = new Product(null, null, null, null, null);
-                            // $p->affichage($conn);
-                            ?>
-                        </tbody>
-                    </table>
+                    <div class="statistique">
+                        <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+                            <canvas id="platformStatsChart"></canvas>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+                            <canvas id="platformStatsChart1"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <!-- =========== Scripts =========  -->
+    <script>
+        var ctx1 = document.getElementById('platformStatsChart').getContext('2d');
+        var platformStatsChart = new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: ['Total enseignant', 'Total etudiant', 'Total cour'],
+                datasets: [{
+                    label: 'Platform Stats',
+                    data: [<?php
+                    $enseignants = new enseignant(null, null, null, null);
+                    $enseignants->affichagetotalenseignant($conn);
+                    ?>, <?php
+                    $etudiants = new etudiant(null, null, null, null);
+                    $etudiants->affichagetotaletudiant($conn);
+                    ?>, 20
+                    ],
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                }
+            }
+        });
+        var ctx2 = document.getElementById('platformStatsChart1').getContext('2d');
+        var platformStatsChart = new Chart(ctx2, {
+            type: 'pie',
+            data: {
+                labels: ['Total Users', 'Total Articles', 'Total Categories'],
+                datasets: [{
+                    label: 'Platform Stats',
+                    data: [<?php
+                    $enseignants = new enseignant(null, null, null, null);
+                    $enseignants->affichagetotalenseignant($conn);
+                    ?>, <?php
+                    $etudiants = new etudiant(null, null, null, null);
+                    $etudiants->affichagetotaletudiant($conn);
+                    ?>, <?php
+                    $etudiants = new Cours();
+                    $etudiants->affichagetotalcour($conn);
+                    ?>
+                    ],
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                }
+            }
+        });
+    </script>
     <script src="assets/js/main.js?v=1"></script>
     <!-- ====== ionicons ======= -->
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>

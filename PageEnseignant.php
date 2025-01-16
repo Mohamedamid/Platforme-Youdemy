@@ -42,7 +42,7 @@ include_once("./classes/Enseignant.php");
                         <span class="title">Académie d'Apprentissage</span>
                     </a>
                 </li>
-                <li class="hovered">
+                <li>
                     <a href="dashboard.php">
                         <span class="icon">
                             <ion-icon name="home-outline"></ion-icon>
@@ -50,7 +50,7 @@ include_once("./classes/Enseignant.php");
                         <span class="title">Accueil</span>
                     </a>
                 </li>
-                <li>
+                <li  class="hovered">
                     <a href="PageEnseignant.php">
                         <span class="icon">
                             <ion-icon name="people-outline"></ion-icon>
