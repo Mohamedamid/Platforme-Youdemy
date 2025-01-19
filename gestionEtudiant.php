@@ -6,6 +6,8 @@ include_once("./classes/Enseignant.php");
 include_once("./classes/Cours.php");
 include_once("./classes/Categorie.php");
 include_once("./classes/Tag.php");
+include_once("./classes/Admin.php");
+
 session_start();
 
 if (!isset($_SESSION['user_email'])) {
@@ -28,8 +30,8 @@ if (!$user || $user['role'] != 'Admin') {
 if (isset($_GET["idEdit"])) {
     $idd = $_GET["idEdit"];
     $statut = $_GET["statut"];
- 
-    $Stat = new enseignant(null, null, null,null);
+
+    $Stat = new Admin(null, null, null);
     $Stat->updateStatut($conn, $idd, $statut);
 }
 ?>
@@ -58,13 +60,79 @@ if (isset($_GET["idEdit"])) {
         td {
             padding: 15px;
         }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e9e9e9;
+        }
+
+        .status-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .status-link {
+            padding: 5px 10px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .status-link:hover {
+            opacity: 0.8;
+        }
+
+        .active-link {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .active-link:hover {
+            background-color: #45a049;
+        }
+
+        .disactive-link {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .disactive-link:hover {
+            background-color: #e53935;
+        }
+
+        th {
+            background-color: #f1f1f1;
+            font-weight: bold;
+        }
     </style>
 </head>
 
 <body>
     <!-- =============== Navigation ================ -->
     <div class="container">
-        <div class="navigation">
+        <div class="navigation active">
             <ul>
                 <li>
                     <a href="#">
@@ -99,14 +167,6 @@ if (isset($_GET["idEdit"])) {
                     </a>
                 </li>
                 <li>
-                    <a href="gestionCour.php">
-                        <span class="icon">
-                            <ion-icon name="library-outline"></ion-icon>
-                        </span>
-                        <span class="title">Gestion des cours</span>
-                    </a>
-                </li>
-                <li>
                     <a href="gestionCategorie.php">
                         <span class="icon">
                             <ion-icon name="book-outline"></ion-icon>
@@ -133,7 +193,7 @@ if (isset($_GET["idEdit"])) {
             </ul>
         </div>
         <!-- ========================= Main ==================== -->
-        <div class="main">
+        <div class="main active">
             <div class="topbar">
                 <div class="toggle">
                     <ion-icon name="menu-outline"></ion-icon>
@@ -143,6 +203,40 @@ if (isset($_GET["idEdit"])) {
                         <input type="text" placeholder="Search here">
                         <ion-icon name="search-outline"></ion-icon>
                     </label>
+                </div>
+                <div style="display: flex;align-items: center;">
+                    <p>Admin</p>
+                    <img src="./assets/image/admin.jpg" style="width: 50px;height: 50px;" alt="">
+                </div>
+            </div>
+            <div class="cardBox">
+                <div class="card">
+                    <div>
+                        <div class="numbers">
+                            <?php
+                            $enseignants = new Admin(null, null, null);
+                            $enseignants->affichagetotalE($conn ,'Etudiant' ,'Disactive');
+                            ?>
+                            <div class="cardName">Les Disactives</div>
+                        </div>
+                    </div>
+                    <div class="iconBx">
+                        <ion-icon name="people-outline"></ion-icon>
+                    </div>
+                </div>
+                <div class="card">
+                    <div>
+                        <div class="numbers">
+                            <?php
+                            $enseignants = new Admin(null, null, null);
+                            $enseignants->affichagetotalE($conn ,'Etudiant' ,'Active');
+                            ?>
+                        </div>
+                        <div class="cardName">Les Actives</div>
+                    </div>
+                    <div class="iconBx">
+                        <ion-icon name="school-outline"></ion-icon>
+                    </div>
                 </div>
             </div>
             <!-- ================ Details List ================= -->
@@ -163,7 +257,7 @@ if (isset($_GET["idEdit"])) {
                     </thead>
                     <tbody>
                         <?php
-                        $etudiant = new etudiant(null, null, null, null);
+                        $etudiant = new Admin(null, null, null);
                         $etudiant->affichageEtudiant($conn);
                         ?>
                     </tbody>

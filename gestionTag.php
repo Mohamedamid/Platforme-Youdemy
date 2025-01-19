@@ -6,6 +6,7 @@ include_once("./classes/Enseignant.php");
 include_once("./classes/Cours.php");
 include_once("./classes/Categorie.php");
 include_once("./classes/Tag.php");
+include_once("./classes/Admin.php");
 
 session_start();
 
@@ -28,50 +29,41 @@ if (!$user || $user['role'] != 'Admin') {
 
 if (isset($_POST["submit"])) {
 
-    $title = $_POST["title"];
-    $discription = $_POST["description"];
-    $url = $_POST["url"];
-    $categorie = $_POST["categorie"];
+    $name = $_POST["name"];
 
-    $aj = new Cours($title, $discription, $url, $categorie);
-    $aj->AjouterCours($conn);
-    header("location:gestionCour.php");
+    $aj = new Tag($name);
+    $aj->AjouterTag($conn);
+    header("location:gestionTag.php");
 }
 
 if (isset($_GET["Edit"])) {
     $id = $_GET["Edit"];
-    $query = "SELECT * FROM course WHERE course_id = :id";
+    $query = "SELECT * FROM tag WHERE tag_id = :id";
     $stmt = $conn->prepare($query);
     $stmt->bindParam(':id', $id, PDO::PARAM_INT);
     $stmt->execute();
     $cours = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $title = $cours["title"];
-    $description = $cours["description"];
-    $url = $cours["conent_url"];
-    $categorie = $cours["category_id"];
+    $name = $cours["name"];
 }
 
 if (isset($_POST["Edit"])) {
     $id = $_GET["Edit"];
-    $title = $_POST["title"];
-    $discription = $_POST["description"];
-    $url = $_POST["url"];
-    $categorie = $_POST["categorie"];
+    $name = $_POST["name"];
 
-    $edit = new Cours($title, $discription, $url, $categorie);
-    // $edit->editProduit($conn, $id);
-    header("location:gestionCour.php");
+    $edit = new Tag($name);
+    $edit->editTag($conn, $id);
+    header("location:gestionTag.php");
 }
 
 if (isset($_GET["Delet"])) {
     $id = $_GET["Delet"];
-    $Delet = new Cours(null, null, null, null);
-    // $Delet->deletProduit($conn, $id);
+    $Delet = new Tag(null);
+    $Delet->deletTag($conn, $id);
 }
 
 if (isset($_POST["reset"])) {
-    header("location:gestionCour.php");
+    header("location:gestionTag.php");
 }
 ?>
 
@@ -100,7 +92,8 @@ if (isset($_POST["reset"])) {
             padding: 15px;
         }
 
-        #platformStatsChart, #platformStatsChart1 {
+        #platformStatsChart,
+        #platformStatsChart1 {
             width: 100% !important;
             height: 300px !important;
         }
@@ -111,62 +104,127 @@ if (isset($_POST["reset"])) {
             align-items: center;
             gap: 20px;
         }
-        
-
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-}
-
-label {
-    font-weight: bold;
-    margin-bottom: 5px;
-    font-size: 14px;
-}
-
-input[type="text"],
-input[type="number"],
-.btn {
-    padding: 10px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 100%;
-    margin: 10px 0;
-}
-
-input[type="text"]:focus,
-input[type="number"]:focus {
-    border-color: #007BFF;
-    outline: none;
-}
-
-.btn {
-    background-color: #007BFF;
-    color: white;
-    cursor: pointer;
-    font-weight: bold;
-    margin-top: 30px;
-}
-
-.btn:hover {
-    background-color: #0056b3;
-}
 
 
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        .btn {
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+
+        .btn {
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 30px;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            width: 70%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        thead {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+
+        thead td {
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            color: #333;
+        }
+
+        tbody td {
+            padding: 12px;
+            text-align: center;
+            font-size: 14px;
+            color: #555;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+
+        tbody .action-links a {
+            padding: 6px 12px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 0 5px;
+            font-weight: bold;
+        }
+
+        .action-links .edit {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .action-links .edit:hover {
+            background-color: #45a049;
+        }
+
+        .action-links .delete {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .action-links .delete:hover {
+            background-color: #e53935;
+        }
+
+        .action-links {
+            text-align: center;
+            width: 30 !important;
+        }
     </style>
 </head>
 
 <body>
     <!-- =============== Navigation ================ -->
     <div class="container">
-        <div class="navigation">
+        <div class="navigation active">
             <ul>
                 <li>
                     <a href="#">
@@ -201,14 +259,6 @@ input[type="number"]:focus {
                     </a>
                 </li>
                 <li>
-                    <a href="gestionCour.php">
-                        <span class="icon">
-                            <ion-icon name="library-outline"></ion-icon>
-                        </span>
-                        <span class="title">Gestion des cours</span>
-                    </a>
-                </li>
-                <li>
                     <a href="gestionCategorie.php">
                         <span class="icon">
                             <ion-icon name="book-outline"></ion-icon>
@@ -235,7 +285,7 @@ input[type="number"]:focus {
             </ul>
         </div>
         <!-- ========================= Main ==================== -->
-        <div class="main">
+        <div class="main active">
             <div class="topbar">
                 <div class="toggle">
                     <ion-icon name="menu-outline"></ion-icon>
@@ -246,52 +296,52 @@ input[type="number"]:focus {
                         <ion-icon name="search-outline"></ion-icon>
                     </label>
                 </div>
+                <div style="display: flex;align-items: center;">
+                    <p>Admin</p>
+                    <img src="./assets/image/admin.jpg" style="width: 50px;height: 50px;" alt="">
+                </div>
             </div>
             <!-- ================ Details List ================= -->
             <div class="details">
-            <form action="" method="post" enctype="multipart/form-data">
+                <form action="" method="post">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="title">title:</label>
-                            <input type="text" id="title" name="title"
-                                value="<?php echo isset($title) ? htmlspecialchars($title) : ''; ?>" required>
+                            <label for="name">Tag:</label>
+                            <input type="text" id="name" name="name"
+                                value="<?php echo isset($name) ? htmlspecialchars($name) : ''; ?>" required>
                         </div>
                         <div class="form-group">
-                        <?php
+                            <?php
                             if (isset($_GET['Edit'])) {
-                                echo '<input type="submit" name="Edit" value="Edit Cour" class="btn">';
+                                echo '<input type="submit" name="Edit" value="Edit Tag" class="btn">';
                             } else {
-                                echo '<input type="submit" name="submit" value="Submit Cour" class="btn">';
+                                echo '<input type="submit" name="submit" value="Submit Tag" class="btn">';
                             }
                             ?>
                         </div>
                     </div>
                 </form>
-                    <div class="cardHeader">
-                        <h2>Les Tags</h2>
-                    </div>
-                    <!-- <table>
-                        <thead>
-                            <tr>
-                                <td class="id">id</td>
-                                <td>title</td>
-                                <td>description</td>
-                                <td>content url</td>
-                                <td>Categorie</td>
-                                <td>date</td>
-                                <td>action</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            $p = new Cours(null ,null ,null ,null);
-                            $p->affichageCours($conn);
-                            ?>
-                        </tbody>
-                    </table> -->
+                <div class="cardHeader">
+                    <h2>Les Tags</h2>
                 </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <td class="id idproduit">id</td>
+                            <td>Tag</td>
+                            <td style="width: 50px;">Action</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $p = new Tag(null);
+                        $p->affichageTag($conn);
+                        ?>
+                    </tbody>
+                </table>
             </div>
         </div>
+    </div>
     </div>
     <!-- =========== Scripts =========  -->
     <script src="./assets/js/script.js?v=1"></script>

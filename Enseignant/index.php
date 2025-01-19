@@ -1,42 +1,116 @@
 <?php
-include_once("./config/config.php");
+include_once("../config/config.php");
 
 session_start();
 
-if (isset($_POST["inscrire"])) {
-    $user_email = $_SESSION['user_email'];
-    $role = 'Etudiant';
-    $statut = 'Active';
-    $sql = "SELECT user_id, username, email, role, statut FROM user WHERE email = :email AND role = :role AND statut = :statut";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute([':email' => $user_email, ':role' => $role, ':statut' => $statut]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+if (!isset($_SESSION['user_email'])) {
 
-    if (!$user || $user['role'] != 'Etudiant' || $user['statut'] != 'Active') {
-        header("Location: login.php");
-        exit();
-    } else {
-
-        $userId = $user["user_id"];
-        $idCoure = $_POST["id"];
-
-        echo "id etudiant: " . $userId;
-        echo "<br> id cours: " . $idCoure;
-    }
+    header("Location: ../login.php");
+    exit();
 }
 
+$user_email = $_SESSION['user_email'];
+
+$sql = "SELECT username, email, role, statut FROM user WHERE email = :email";
+$stmt = $conn->prepare($sql);
+$stmt->execute([':email' => $user_email]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$user || $user['role'] != 'Enseignant' || $user['statut'] != 'Active') {
+
+    header("Location: ../login.php");
+    exit();
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./assets/style/home.css">
-    <title>Plateforme d'Apprentissage</title>
-
+    <title>Académie d'Apprentissage</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .navbar {
+            background-color: #2c3e50;
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-links a:hover {
+            background-color: #34495e;
+        }
+
+        .header {
+            background-color: #34495e;
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin-bottom: 20px;
+        }
+
+        .header p {
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .teachers-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -194,6 +268,20 @@ if (isset($_POST["inscrire"])) {
             background-color: #f8f9fa;
             border-radius: 8px;
         }
+
+        @media (max-width: 768px) {
+            .teachers-container {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                padding: 40px 20px;
+            }
+
+            .header p {
+                font-size: 16px;
+            }
+        }
     </style>
 </head>
 
@@ -201,38 +289,17 @@ if (isset($_POST["inscrire"])) {
     <nav class="navbar">
         <div class="nav-container">
             <a href="#" class="logo">Académie d'Apprentissage</a>
-            <button class="nav-toggle" onclick="toggleNav()">☰</button>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="./home.php">Accueil</a></li>
-                <?php
-                if (isset($_SESSION['user_email'])) {
-
-                    $user_email = $_SESSION['user_email'];
-                    $role = 'Etudiant';
-                    $statut = 'Active';
-
-                    $sql = "SELECT role, statut FROM user WHERE email = :email";
-                    $stmt = $conn->prepare($sql);
-                    $stmt->execute([':email' => $user_email]);
-                    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-                    if ($user && $user['role'] == $role && $user['statut'] == $statut) {
-                        echo '<li><a href="#">Cours</a></li>
-                            <li><a href="#">Formateurs</a></li>
-                            <li class="nav-item"><a class="nav-link" href="./logout.php">Déconnexion</a></li>';
-                    } else {
-                        echo '<li class="nav-item"><a class="nav-link" href="./login.php">Connexion</a></li>';
-                    }
-                } else {
-                    echo '<li class="nav-item"><a class="nav-link" href="./login.php">Connexion</a></li>';
-                }
-                ?>
+            <ul class="nav-links">
+                <li><a href="index.php">Accueil</a></li>
+                <li><a href="gestionCour.php">Cours</a></li>
+                <li class="nav-item"><a class="nav-link" href="../logout.php">Déconnexion</a></li>
             </ul>
         </div>
     </nav>
 
     <header class="header">
-        <h1>Plateforme de Formation en Ligne</h1>
+        <h1>Bienvenue sur votre Tableau de Bord, <?php echo $user['username']; ?></h1>
+        <p>Gérez vos cours, vos étudiants et vos ressources en ligne.</p>
     </header>
 
     <div class="courses-container">
@@ -327,11 +394,9 @@ if (isset($_POST["inscrire"])) {
                 } else {
                     echo '<div class="tags-container"><span class="tag">Pas de tags</span></div>';
                 }
-                echo '<form action="" method="post">
-                <input type="hidden" name="id" value="'.$course["course_id"].'">
-                <button class="enroll-btn" name="inscrire">S\'inscrire</button>
-                </form>';
+
                 echo '</div></div>'; // Fermeture de course-content et course-card
+
             } else {
                 echo '<div class="no-content">La catégorie n\'existe pas pour le cours : ' . 
                      htmlspecialchars($course['title']) . '</div>';
@@ -355,7 +420,7 @@ if (isset($_POST["inscrire"])) {
     });
 </script>
 
-    <script src="./assets/js/home.js"></script>
+
 </body>
 
 </html>

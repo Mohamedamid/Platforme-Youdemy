@@ -6,6 +6,7 @@ include_once("./classes/Enseignant.php");
 include_once("./classes/Cours.php");
 include_once("./classes/Categorie.php");
 include_once("./classes/Tag.php");
+include_once("./classes/Admin.php");
 
 session_start();
 
@@ -82,12 +83,82 @@ if (isset($_POST["reset"])) {
     <!-- ======= Styles ====== -->
     <link rel="stylesheet" href="./assets/style/dashboard.css">
     <link rel="stylesheet" href="./assets/style/gestionCour.css">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+        }
+
+        thead {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+
+        thead td {
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            color: #333;
+        }
+
+        tbody td {
+            padding: 12px;
+            text-align: center;
+            font-size: 14px;
+            color: #555;
+            border-bottom: 1px solid #ddd;
+
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+
+        tbody .action-links a {
+            padding: 6px 12px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 0 5px;
+            font-weight: bold;
+        }
+
+        .action-links .edit {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .action-links .edit:hover {
+            background-color: #45a049;
+        }
+
+        .action-links .delete {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .action-links .delete:hover {
+            background-color: #e53935;
+        }
+
+        .action-links {
+            text-align: center;
+        }
+    </style>
 </head>
 
 <body>
     <!-- =============== Navigation ================ -->
     <div class="container">
-        <div class="navigation">
+        <div class="navigation active">
             <ul>
                 <li>
                     <a href="#">
@@ -121,14 +192,6 @@ if (isset($_POST["reset"])) {
                         <span class="title">Les etudiants</span>
                     </a>
                 </li>
-                <li>
-                    <a href="gestionCour.php">
-                        <span class="icon">
-                            <ion-icon name="library-outline"></ion-icon>
-                        </span>
-                        <span class="title">Gestion des cours</span>
-                    </a>
-                </li>
                 <li class="hovered">
                     <a href="gestionCategorie.php">
                         <span class="icon">
@@ -156,7 +219,7 @@ if (isset($_POST["reset"])) {
             </ul>
         </div>
         <!-- ========================= Main ==================== -->
-        <div class="main">
+        <div class="main active">
             <div class="topbar">
                 <div class="toggle">
                     <ion-icon name="menu-outline"></ion-icon>
@@ -167,24 +230,28 @@ if (isset($_POST["reset"])) {
                         <ion-icon name="search-outline"></ion-icon>
                     </label>
                 </div>
+                <div style="display: flex;align-items: center;">
+                    <p>Admin</p>
+                    <img src="./assets/image/admin.jpg" style="width: 50px;height: 50px;" alt="">
+                </div>
             </div>
             <!-- ================ Details List ================= -->
             <div class="details">
-            <form action="" method="post">
+                <form action="" method="post">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="name">Name:</label>
+                            <label for="name">Categorie:</label>
                             <input type="text" id="name" name="name"
                                 value="<?php echo isset($name) ? htmlspecialchars($name) : ''; ?>" required>
                         </div>
                         <div class="form-group">
-                            <label for="description">description:</label>
+                            <label for="description">Description:</label>
                             <textarea id="description" name="description" required>
                                 <?php echo isset($description) ? htmlspecialchars($description) : ''; ?>
                             </textarea>
                         </div>
                         <div class="form-group">
-                        <?php
+                            <?php
                             if (isset($_GET['Edit'])) {
                                 echo '<input type="submit" name="Edit" value="Edit Categorie" class="btn">';
                             } else {
@@ -194,28 +261,28 @@ if (isset($_POST["reset"])) {
                         </div>
                     </div>
                 </form>
-                    <div class="cardHeader">
-                        <h2>Les categories</h2>
-                    </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <td class="idproduit">id</td>
-                                <td>name</td>
-                                <td>description</td>
-                                <td>action</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            $p = new Categorie(null ,null );
-                            $p->affichageCategorie($conn);
-                            ?>
-                        </tbody>
-                    </table>
+                <div class="cardHeader">
+                    <h2>Les categories</h2>
                 </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <td class="idproduit">id</td>
+                            <td>Categorie</td>
+                            <td>Description</td>
+                            <td>Action</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $p = new Categorie(null, null);
+                        $p->affichageCategorie($conn);
+                        ?>
+                    </tbody>
+                </table>
             </div>
         </div>
+    </div>
     </div>
     <!-- =========== Scripts =========  -->
     <script src="./assets/js/script.js?v=1"></script>

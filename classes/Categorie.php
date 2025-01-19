@@ -10,6 +10,7 @@ class Categorie
         $this->name = $name;
         $this->description = $description;
     }
+
     function affichageCategorie($conn)
     {
         $sql = "SELECT * FROM Category";
@@ -20,13 +21,14 @@ class Categorie
             echo '<td class="id idproduit">' . $categorie['category_id'] . '</td>';
             echo '<td style="width:150px">' . htmlspecialchars($categorie['name']) . '</td>';
             echo '<td style="width:150px">' . htmlspecialchars($categorie['description']) . '</td>';
-            echo '<td>
+            echo '<td class="action-links" style="width:30px !important">
                 <a href="gestionCategorie.php?Edit=' . $categorie["category_id"] . '" class="edit">Edit</a>
-                <a href="gestionCategorie.php?Delet=' . $categorie["category_id"] . '" class="delete">Delet</a>
+                <a href="gestionCategorie.php?Delet=' . $categorie["category_id"] . '" class="delete">Delete</a>
             </td>';
             echo '</tr>';
         }
     }
+
     function affichagetotalCategorie($conn)
     {
         $query = "SELECT COUNT(*) AS total_categorie FROM category";
