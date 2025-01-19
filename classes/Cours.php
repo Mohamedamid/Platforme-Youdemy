@@ -55,10 +55,11 @@ class Cours
             echo '<tr>';
             echo '<td class="id">' . $cour['course_id'] . '</td>';
             echo '<td style="width:150px">' . htmlspecialchars($cour['title']) . '</td>';
-            echo '<td>' . htmlspecialchars($cour['description']) . '</td>';
-            echo '<td>' . htmlspecialchars($cour['content_url']) . '</td>';
+            echo '<td style="width:800px !important">' . htmlspecialchars($cour['description']) . '</td>';
+            echo '<td style="width:400px !important">' . htmlspecialchars($cour['content_url']) . '</td>';
+            echo '<td>' . htmlspecialchars($cour['content_type']) . '</td>';
             echo '<td style="width:150px !important">' . htmlspecialchars($cour['name']) . '</td>';
-            echo '<td style="width:150px !important">' . htmlspecialchars($cour['created_at']) . '</td>';
+            echo '<td style="width:180px !important">' . htmlspecialchars($cour['created_at']) . '</td>';
             echo '<td class="idproduit action-buttons" style="width:150px !important">
                     <a href="gestionCour.php?Edit=' . $cour["course_id"] . '" class="edit">Edit</a>
                     <a href="gestionCour.php?Delet=' . $cour["course_id"] . '" class="delete">Delet</a>

@@ -41,7 +41,7 @@ if (isset($_POST["submit"])) {
     // }
 
     $aj = new Cours($title, $description, $url, $categorie);
-    $aj->AjouterCours($conn, $tags ,$type);
+    $aj->AjouterCours($conn, $tags, $type);
 
     header("location:gestionCour.php");
 }
@@ -67,15 +67,15 @@ if (isset($_POST["Edit"])) {
     $description = $_POST["description"];
     $url = $_POST["url"];
     $categorie = $_POST["categorie"];
-    
+
     // جلب التاجات المحددة من النموذج (مثال على اختيار عدة تاجات)
     $tags = isset($_POST['tags']) ? $_POST['tags'] : [];  // تأكد من أن 'tags' هو اسم الحقل في النموذج
-    
+
     // إنشاء كائن جديد لدورة مع التاجات الجديدة
     $edit = new Cours($title, $description, $url, $categorie);
-  // تمرير التاجات
-    $edit->editCour($conn, $id , $tags);  // استدعاء دالة التعديل
-    
+    // تمرير التاجات
+    $edit->editCour($conn, $id, $tags);  // استدعاء دالة التعديل
+
     // إعادة التوجيه إلى صفحة إدارة الدورات
     header("location:gestionCour.php");
 }
@@ -205,9 +205,11 @@ if (isset($_POST["reset"])) {
         .form-group2 {
             width: 715px;
         }
+
         .form-group3 {
             width: 347.5px;
         }
+
         .form-group4 {
             width: 100%;
         }
@@ -385,91 +387,78 @@ if (isset($_POST["reset"])) {
 
     <div class="teachers-container">
         <div class="details">
-        <form action="" method="post" enctype="multipart/form-data">
-    <div class="form-grid">
-        <!-- Course Title -->
-        <div class="form-group form-group1">
-            <label for="title">Title:</label>
-            <input type="text" id="title" name="title"
-                value="<?php echo isset($title) ? htmlspecialchars($title) : ''; ?>" required>
-        </div>
-
-        <!-- Course Description -->
-        <div class="form-group form-group2" >
-            <label for="description">Description:</label>
-            <textarea id="description" name="description" required><?php echo isset($description) ? htmlspecialchars($description) : ''; ?></textarea>
-        </div>
-
-        <!-- Content URL -->
-        <div class="form-group form-group1">
-            <label for="url">Content URL:</label>
-            <input type="text" id="url" name="url"
-                value="<?php echo isset($url) ? htmlspecialchars($url) : ''; ?>" required>
-        </div>
-        <div class="form-group form-group3">
-            <label for="url">Type URL:</label>
-            <select name="content_type" id="">
-                <option value="video">Video</option>
-                <option value="pdf">PDF</option>
-            </select>
-        </div>
-
-        <!-- Course Category -->
-        <div class="form-group form-group3">
-            <label for="categorie">Categorie:</label>
-            <?php
-            $sql = "SELECT category_id, name FROM category";
-            $stmt = $conn->prepare($sql);
-            $stmt->execute();
-            $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            ?>
-            <select id="categorie" name="categorie" required>
-                <option value="" disabled selected>Choisissez la catégorie</option>
-                <?php
-                foreach ($categories as $category) {
-                    $selected = (isset($categorie) && $categorie == $category['category_id']) ? 'selected' : '';
-                    echo '<option value="' . htmlspecialchars($category['category_id']) . '" ' . $selected . '>' . htmlspecialchars($category['name']) . '</option>';
-                }
-                ?>
-            </select>
-        </div>
-
-        <!-- Tags Section (Using Checkboxes) -->
-        <div class="form-group form-group4">
-            <fieldset>
-                <legend>Choisissez vos tags :</legend>
-                <?php
-                $sql = "SELECT tag_id, name FROM tag";
-                $stmt = $conn->prepare($sql);
-                $stmt->execute();
-                $tags = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                ?>
-                <?php
-                foreach ($tags as $tag) {
-                    echo '<label>';
-                    echo '<input type="checkbox" name="tags[]" value="' . htmlspecialchars($tag['tag_id']) . '" ' . (isset($selected_tags) && in_array($tag['tag_id'], $selected_tags) ? 'checked' : '') . '> ';
-                    echo htmlspecialchars($tag['name']);
-                    echo '</label>';
-                }
-                ?>
-            </fieldset>
-        </div>
-
-        <!-- Submit Button -->
-        <div class="form-group">
-            <?php
-            if (isset($_GET['Edit'])) {
-                echo '<input type="submit" name="Edit" value="Edit Course" class="btn">';
-            } else {
-                echo '<input type="submit" name="submit" value="Submit Course" class="btn">';
-            }
-            ?>
-        </div>
-    </div>
-</form>
-
-
-
+            <form action="" method="post" enctype="multipart/form-data">
+                <div class="form-grid">
+                    <div class="form-group form-group1">
+                        <label for="title">Title:</label>
+                        <input type="text" id="title" name="title"
+                            value="<?php echo isset($title) ? htmlspecialchars($title) : ''; ?>" required>
+                    </div>
+                    <div class="form-group form-group2">
+                        <label for="description">Description:</label>
+                        <textarea id="description" name="description"
+                            required><?php echo isset($description) ? htmlspecialchars($description) : ''; ?></textarea>
+                    </div>
+                    <div class="form-group form-group1">
+                        <label for="url">Content URL:</label>
+                        <input type="text" id="url" name="url"
+                            value="<?php echo isset($url) ? htmlspecialchars($url) : ''; ?>" required>
+                    </div>
+                    <div class="form-group form-group3">
+                        <label for="url">Type URL:</label>
+                        <select name="content_type" id="">
+                            <option value="video">Video</option>
+                            <option value="pdf">PDF</option>
+                        </select>
+                    </div>
+                    <div class="form-group form-group3">
+                        <label for="categorie">Categorie:</label>
+                        <?php
+                        $sql = "SELECT category_id, name FROM category";
+                        $stmt = $conn->prepare($sql);
+                        $stmt->execute();
+                        $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                        ?>
+                        <select id="categorie" name="categorie" required>
+                            <option value="" disabled selected>Choisissez la catégorie</option>
+                            <?php
+                            foreach ($categories as $category) {
+                                $selected = (isset($categorie) && $categorie == $category['category_id']) ? 'selected' : '';
+                                echo '<option value="' . htmlspecialchars($category['category_id']) . '" ' . $selected . '>' . htmlspecialchars($category['name']) . '</option>';
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="form-group form-group4">
+                        <fieldset>
+                            <legend>Choisissez vos tags :</legend>
+                            <?php
+                            $sql = "SELECT tag_id, name FROM tag";
+                            $stmt = $conn->prepare($sql);
+                            $stmt->execute();
+                            $tags = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                            ?>
+                            <?php
+                            foreach ($tags as $tag) {
+                                echo '<label>';
+                                echo '<input type="checkbox" name="tags[]" value="' . htmlspecialchars($tag['tag_id']) . '" ' . (isset($selected_tags) && in_array($tag['tag_id'], $selected_tags) ? 'checked' : '') . '> ';
+                                echo htmlspecialchars($tag['name']);
+                                echo '</label>';
+                            }
+                            ?>
+                        </fieldset>
+                    </div>
+                    <div class="form-group">
+                        <?php
+                        if (isset($_GET['Edit'])) {
+                            echo '<input type="submit" name="Edit" value="Edit Course" class="btn">';
+                        } else {
+                            echo '<input type="submit" name="submit" value="Submit Course" class="btn">';
+                        }
+                        ?>
+                    </div>
+                </div>
+            </form>
             <div class="cardHeader">
                 <h2>Les Cours</h2>
             </div>
@@ -480,6 +469,7 @@ if (isset($_POST["reset"])) {
                         <th>Title</th>
                         <th>Description</th>
                         <th>Content URL</th>
+                        <th>Type URL</th>
                         <th>Categorie</th>
                         <th>Date</th>
                         <th>Actions</th>

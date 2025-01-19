@@ -45,155 +45,134 @@ if (isset($_POST["inscrire"])) {
         }
 
         body {
-            background-color: #f5f5f5;
-            /* padding: 20px; */
+            background-color: #f4f7fc;
+
         }
 
+        /* تحسين تصميم البطاقة */
         .courses-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 20px;
-            max-width: 1200px;
-            margin: 50px auto;
+            padding: 20px;
         }
 
         .course-card {
-            background: white;
-            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
+            position: relative;
+            height: 550px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .course-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .course-content {
-            padding: 20px;
+            transform: translateY(-10px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
         }
 
         .content-container {
             position: relative;
-            width: 100%;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
-            background-color: #f8f9fa;
-        }
-
-        .video-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #000;
+            padding: 15px;
         }
 
         .video-container iframe,
         .video-container video {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
-            height: 100%;
-            border: none;
+            height: 220px;
+            border-radius: 10px;
         }
 
-        .video-fallback {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .pdf-preview object {
             width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #2c3e50;
-            color: white;
-            font-size: 1.2rem;
+            height: 220px;
+            border-radius: 10px;
         }
 
-        .video-play-button {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 60px;
-            height: 60px;
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: none;
-            z-index: 2;
-        }
-
-        .video-play-button::after {
-            content: '';
-            width: 0;
-            height: 0;
-            border-style: solid;
-            border-width: 10px 0 10px 20px;
-            border-color: transparent transparent transparent #2c3e50;
-            margin-left: 5px;
-        }
-
-        .pdf-preview {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #f8f9fa;
-            color: #666;
+        .course-content {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-top: 2px solid #eee;
+            flex-grow: 1;
+            position: relative;
         }
 
         .course-title {
-            font-size: 1.25rem;
-            color: #2c3e50;
-            margin-bottom: 10px;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #333;
         }
 
         .course-description {
-            color: #666;
-            margin-bottom: 15px;
-            line-height: 1.5;
+            font-size: 16px;
+            color: #555;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .course-category {
-            display: inline-block;
-            padding: 4px 12px;
-            background-color: #e9ecef;
-            color: #495057;
-            border-radius: 15px;
-            margin-bottom: 10px;
-            font-size: 0.9rem;
+            font-size: 14px;
+            color: #007bff;
+            font-weight: bold;
+            margin-top: 10px;
         }
 
         .tags-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
             margin-top: 15px;
         }
 
         .tag {
-            padding: 4px 10px;
-            background-color: #f0f0f0;
-            color: #666;
-            border-radius: 12px;
-            font-size: 0.85rem;
+            display: inline-block;
+            background-color: #e0e0e0;
+            padding: 6px 12px;
+            border-radius: 20px;
+            margin:8px 8px 0 0;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .enroll-form {
+            position: absolute;
+            bottom: 10px;
+            width: 85%;
+            /* padding: 15px; */
+            background-color: #fff;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .enroll-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin: 5px 0 10px 0;
+        }
+
+        .enroll-btn:hover {
+            background-color: #0056b3;
         }
 
         .no-content {
             padding: 20px;
+            background-color: #f8d7da;
+            color: #721c24;
+            border-radius: 5px;
             text-align: center;
-            color: #666;
-            background-color: #f8f9fa;
-            border-radius: 8px;
+            font-weight: bold;
         }
+
     </style>
 </head>
 
@@ -257,66 +236,62 @@ if (isset($_POST["inscrire"])) {
 
             if ($category) {
                 echo '<div class="course-card">';
-                
+
                 // Section de contenu
                 if (!empty($course['content_url'])) {
                     if ($course['content_type'] == 'video') {
                         $videoUrl = htmlspecialchars($course['content_url']);
-                        // Vérifier si c'est une URL YouTube
                         if (strpos($videoUrl, 'youtube.com') !== false || strpos($videoUrl, 'youtu.be') !== false) {
-                            // Convertir l'URL en URL d'intégration si nécessaire
                             $videoId = '';
                             if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $videoUrl, $matches)) {
                                 $videoId = $matches[1];
                             }
                             if ($videoId) {
                                 echo '<div class="content-container">
-                                        <div class="video-container">
-                                            <iframe src="https://www.youtube.com/embed/' . $videoId . '" 
-                                                    allowfullscreen></iframe>
-                                        </div>
-                                      </div>';
-                            }
-                        } else {
-                            // Pour les vidéos directes
-                            echo '<div class="content-container">
                                     <div class="video-container">
-                                        <video controls>
-                                            <source src="' . $videoUrl . '" type="video/mp4">
-                                            <source src="' . $videoUrl . '" type="video/webm">
-                                            Votre navigateur ne prend pas en charge la lecture de vidéos.
-                                        </video>
+                                        <iframe src="https://www.youtube.com/embed/' . $videoId . '" 
+                                                allowfullscreen></iframe>
                                     </div>
                                   </div>';
-                        }
-                    } elseif ($course['content_type'] == 'pdf') {
-                        echo '<div class="content-container">
-                                <div class="pdf-preview">
-                                    <embed type="application/x-google-chrome-pdf" src="chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/2fbabbcf-39c4-4f86-8774-e8282491637a" original-url="https://www.aeee.in/wp-content/uploads/2020/08/Sample-pdf.pdf" background-color="4283586137" javascript="allow">
+                            }
+                        } else {
+                            echo '<div class="content-container">
+                                <div class="video-container">
+                                    <video controls>
+                                        <source src="' . $videoUrl . '" type="video/mp4">
+                                        <source src="' . $videoUrl . '" type="video/webm">
+                                        Votre navigateur ne prend pas en charge la lecture de vidéos.
+                                    </video>
                                 </div>
                               </div>';
+                        }
+                    } elseif ($course['content_type'] == 'pdf') {
+                        echo '<div class="content-container content-container1">
+                            <div class="pdf-preview">
+                                <object data="' . $course['content_url'] . '" type="application/pdf" width="100%" height="219px">
+                                    <p>Le navigateur n\'a pas pu afficher le fichier. Vous pouvez le télécharger depuis <a href="' . $course['content_url'] . '">ici</a>.</p>
+                                </object>
+                            </div>
+                        </div>';
                     } else {
                         echo '<div class="content-container">
-                                <div class="video-fallback">Contenu non pris en charge</div>
-                              </div>';
+                            <div class="video-fallback">Contenu non pris en charge</div>
+                          </div>';
                     }
                 } else {
                     echo '<div class="content-container">
-                            <div class="video-fallback">Contenu non disponible</div>
-                          </div>';
+                        <div class="video-fallback">Contenu non disponible</div>
+                      </div>';
                 }
 
                 echo '<div class="course-content">';
-                // Titre
+
                 echo '<h2 class="course-title">' . htmlspecialchars($course['title'] ?? 'Sans titre') . '</h2>';
-                
-                // Description
+
                 echo '<p class="course-description">' . htmlspecialchars($course['description'] ?? 'Pas de détails') . '</p>';
-                
-                // Catégorie
+
                 echo '<span class="course-category">' . htmlspecialchars($category['name'] ?? 'Non défini') . '</span>';
 
-                // Tags
                 if (!empty($course['tags'])) {
                     $tags = explode(",", $course['tags']);
                     echo '<div class="tags-container">';
@@ -327,14 +302,16 @@ if (isset($_POST["inscrire"])) {
                 } else {
                     echo '<div class="tags-container"><span class="tag">Pas de tags</span></div>';
                 }
-                echo '<form action="" method="post">
-                <input type="hidden" name="id" value="'.$course["course_id"].'">
-                <button class="enroll-btn" name="inscrire">S\'inscrire</button>
+
+                echo '<form action="" method="post" class="enroll-form">
+                    <input type="hidden" name="id" value="'.$course["course_id"].'">
+                    <button class="enroll-btn" name="inscrire">S\'inscrire</button>
                 </form>';
-                echo '</div></div>'; // Fermeture de course-content et course-card
+                echo '</div>';
+                
+                echo '</div>';
             } else {
-                echo '<div class="no-content">La catégorie n\'existe pas pour le cours : ' . 
-                     htmlspecialchars($course['title']) . '</div>';
+                echo '<div class="no-content">La catégorie n\'existe pas pour le cours : ' . htmlspecialchars($course['title']) . '</div>';
             }
         }
     } else {
@@ -343,17 +320,17 @@ if (isset($_POST["inscrire"])) {
     ?>
 </div>
 
-<script>
-    // Amélioration du chargement des vidéos
-    document.addEventListener('DOMContentLoaded', function() {
-        var videos = document.querySelectorAll('video');
-        videos.forEach(function(video) {
-            video.addEventListener('error', function() {
-                this.parentElement.innerHTML = '<div class="video-fallback">Désolé, une erreur est survenue lors du chargement de la vidéo</div>';
+    <script>
+        // Amélioration du chargement des vidéos
+        document.addEventListener('DOMContentLoaded', function () {
+            var videos = document.querySelectorAll('video');
+            videos.forEach(function (video) {
+                video.addEventListener('error', function () {
+                    this.parentElement.innerHTML = '<div class="video-fallback">Désolé, une erreur est survenue lors du chargement de la vidéo</div>';
+                });
             });
         });
-    });
-</script>
+    </script>
 
     <script src="./assets/js/home.js"></script>
 </body>
