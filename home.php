@@ -18,27 +18,27 @@ if (isset($_POST["inscrire"])) {
         exit();
     } else {
         $userId = $user["user_id"];
-$idCourse = $_POST["id"]; // تأكد من أن المتغير هو $idCourse وليس $idCoure
+$idCourse = $_POST["id"];
 $stmt = $conn->prepare("SELECT * FROM enrollment WHERE user_id = :user_id AND course_id = :course_id");
-$stmt->execute([':user_id' => $userId, ':course_id' => $idCourse]); // تأكد من استخدام $idCourse هنا
+$stmt->execute([':user_id' => $userId, ':course_id' => $idCourse]);
 
 if ($stmt->rowCount() > 0) {
-    // إذا كان المستخدم مسجلًا بالفعل في الدورة
-    echo "<script>alert('أنت مسجل بالفعل في هذه الدورة.');</script>";
+
+    echo "<script>alert('n'pas inscrire dans le course');</script>";
 } else {
-    // إذا لم يكن مسجلًا، نقوم بإضافة التسجيل
+
     $stmt = $conn->prepare("INSERT INTO enrollment (user_id, course_id) VALUES (:user_id, :course_id)");
 
-    // استخدم bindParam بشكل صحيح
+
     $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
     $stmt->bindParam(':course_id', $idCourse, PDO::PARAM_INT);
 
     if ($stmt->execute()) {
-        // إذا تم التسجيل بنجاح
-        echo "<script>alert('تم التسجيل بنجاح!');</script>";
+    
+        echo "<script>alert('inscrire success');</script>";
     } else {
-        // إذا حدث خطأ أثناء التسجيل
-        echo "<script>alert('حدث خطأ أثناء التسجيل.');</script>";
+    
+        echo "<script>alert('Error inscrire!');</script>";
     }
 }
     }
@@ -68,7 +68,6 @@ if ($stmt->rowCount() > 0) {
 
         }
 
-        /* تحسين تصميم البطاقة */
         .courses-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));

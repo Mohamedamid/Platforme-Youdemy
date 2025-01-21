@@ -239,8 +239,8 @@ class Cours
 
     function pagination1($conn, $ofset, $userId)
 {
-    $limit = 3;  // Nombre de cours par page
-    $offset = $ofset;  // Calculer l'offset
+    $limit = 3; 
+    $offset = $ofset;  
 
     $sql = "SELECT c.*, e.* 
             FROM course c
@@ -257,7 +257,6 @@ class Cours
 
     if ($courses) {
         foreach ($courses as $course) {
-            // Récupérer le nom de la catégorie pour chaque cours
             $categorySql = "SELECT name FROM category WHERE category_id = :category_id";
             $categoryStmt = $conn->prepare($categorySql);
             $categoryStmt->bindParam(':category_id', $course['category_id'], PDO::PARAM_INT);
@@ -267,12 +266,10 @@ class Cours
             if ($category) {
                 echo '<div class="course-card">';
                 
-                // Vérifier et afficher le contenu (vidéo, PDF, ou autre)
                 if (!empty($course['content_url'])) {
                     if ($course['content_type'] == 'video') {
                         $videoUrl = htmlspecialchars($course['content_url']);
                         
-                        // Si le lien est une vidéo YouTube
                         if (strpos($videoUrl, 'youtube.com') !== false || strpos($videoUrl, 'youtu.be') !== false) {
                             $videoId = '';
                             if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $videoUrl, $matches)) {
@@ -288,7 +285,7 @@ class Cours
                                 echo '</div>';
                             }
                         } else {
-                            // Si ce n'est pas une vidéo YouTube, afficher une vidéo ordinaire
+        
                             echo '<div class="content-container">
                                     <div class="video-container">
                                         <video controls>
@@ -300,7 +297,7 @@ class Cours
                                   </div>';
                         }
                     } elseif ($course['content_type'] == 'pdf') {
-                        // Si le contenu est un fichier PDF
+    
                         echo '<div class="content-container content-container1">
                                 <div class="pdf-preview">
                                     <object data="' . $course['content_url'] . '" type="application/pdf" width="100%" height="219px">
@@ -309,7 +306,7 @@ class Cours
                                 </div>
                               </div>';
                     } else {
-                        // Si le type de contenu n'est pas pris en charge
+    
                         echo '<div class="content-container">
                                 <div class="video-fallback">Contenu non pris en charge</div>
                               </div>';
@@ -320,13 +317,11 @@ class Cours
                           </div>';
                 }
 
-                // Afficher les informations du cours (titre, description, catégorie)
                 echo '<div class="course-content">';
                 echo '<h2 class="course-title">' . htmlspecialchars($course['title'] ?? 'Sans titre') . '</h2>';
                 echo '<p class="course-description">' . htmlspecialchars($course['description'] ?? 'Pas de détails') . '</p>';
                 echo '<span class="course-category">' . htmlspecialchars($category['name'] ?? 'Non défini') . '</span>';
 
-                // Afficher les tags (s’il y en a)
                 if (!empty($course['tags'])) {
                     $tags = explode(",", $course['tags']);
                     echo '<div class="tags-container">';
