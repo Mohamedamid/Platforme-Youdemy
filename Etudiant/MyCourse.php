@@ -4,46 +4,46 @@ include_once("../classes/Cours.php");
 
 session_start();
 
-// Check if user is logged in and email exists in session
+
 if (isset($_SESSION['user_email'])) {
     $user_email = $_SESSION['user_email'];
     $role = 'Etudiant';
     $statut = 'Active';
 
-    // Fetch the user from the database
+    
     $sql = "SELECT user_id, email FROM user WHERE email = :email AND role = :role AND statut = :statut";
     $stmt = $conn->prepare($sql);
     $stmt->execute([':email' => $user_email, ':role' => $role, ':statut' => $statut]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Check if the user was found
+    
     if ($user) {
         $userId = $user['user_id'];
         
-        // Check if the course ID is posted
+        
         if (isset($_POST["id"])) {
             $courseId = $_POST["id"];
 
-            // Check if the user is already enrolled in the course
+            
             $stmt = $conn->prepare("SELECT * FROM enrollment WHERE user_id = :user_id AND course_id = :course_id");
             $stmt->execute([':user_id' => $userId, ':course_id' => $courseId]);
             if ($stmt->rowCount() > 0) {
-                echo "<script>alert('أنت مسجل بالفعل في هذه الدورة.');</script>";
+                echo "<script>alert('déja inscrire.');</script>";
             } else {
-                // Insert the enrollment
+                
                 $stmt = $conn->prepare("INSERT INTO enrollment (user_id, course_id) VALUES (?, ?)");
                 $stmt->bindParam(1, $userId, PDO::PARAM_INT);
                 $stmt->bindParam(2, $courseId, PDO::PARAM_INT);
 
                 if ($stmt->execute()) {
-                    echo "<script>alert('تم التسجيل بنجاح!');</script>";
+                    echo "<script>alert('inscrire success');</script>";
                 } else {
-                    echo "<script>alert('حدث خطأ أثناء التسجيل.');</script>";
+                    echo "<script>alert('Error inscrire');</script>";
                 }
             }
         }
 
-        // Fetch the courses the user is enrolled in
+        
         $sql = "SELECT c.* FROM course c
                 JOIN enrollment e ON c.course_id = e.course_id
                 WHERE e.user_id = :user_id";
@@ -52,10 +52,10 @@ if (isset($_SESSION['user_email'])) {
         $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
     } else {
-        echo "<script>alert('لا يمكن العثور على المستخدم.');</script>";
+        echo "<script>alert('Error!!');</script>";
     }
 } else {
-    echo "<script>alert('لا يوجد مستخدم مسجل.');</script>";
+    echo "<script>alert('error!!!');</script>";
 }
 
 ?>
@@ -236,7 +236,7 @@ if (isset($_SESSION['user_email'])) {
     <?php if (isset($courses) && count($courses) > 0): ?>
             <?php foreach ($courses as $course): ?>
                 <?php 
-                // جلب اسم الفئة الخاصة بكل دورة
+                
                 $categorySql = "SELECT name FROM category WHERE category_id = :category_id";
                 $categoryStmt = $conn->prepare($categorySql);
                 $categoryStmt->bindParam(':category_id', $course['category_id'], PDO::PARAM_INT);
@@ -246,7 +246,7 @@ if (isset($_SESSION['user_email'])) {
                 
                 <?php if ($category): ?>
                     <div class="course-card">
-                        <!-- عرض المحتوى (فيديو أو PDF أو محتوى آخر) -->
+                        
                         <?php if (!empty($course['content_url'])): ?>
                             <?php if ($course['content_type'] == 'video'): ?>
                                 <?php 
@@ -294,13 +294,13 @@ if (isset($_SESSION['user_email'])) {
                             </div>
                         <?php endif; ?>
 
-                        <!-- عرض معلومات الدورة (العنوان، الوصف، الفئة) -->
+                        
                         <div class="course-content">
                             <h2 class="course-title"><?= htmlspecialchars($course['title'] ?? 'Sans titre') ?></h2>
                             <p class="course-description"><?= htmlspecialchars($course['description'] ?? 'Pas de détails') ?></p>
                             <span class="course-category"><?= htmlspecialchars($category['name'] ?? 'Non défini') ?></span>
 
-                            <!-- عرض التاجز (إذا كانت موجودة) -->
+                            
                             <?php if (!empty($course['tags'])): ?>
                                 <?php 
                                 $tags = explode(",", $course['tags']);
@@ -314,7 +314,6 @@ if (isset($_SESSION['user_email'])) {
                                 <div class="tags-container"><span class="tag">Pas de tags</span></div>
                             <?php endif; ?>
 
-                            <!-- عرض زر التسجيل -->
                             <form action="" method="post" class="enroll-form">
                                 <input type="hidden" name="id" value="<?= $course['course_id'] ?>">
                                 <button class="enroll-btn" name="inscrire">S'inscrire</button>
@@ -326,7 +325,7 @@ if (isset($_SESSION['user_email'])) {
                 <?php endif; ?>
             <?php endforeach; ?>
     <?php else: ?>
-        <p>لم تقم بالتسجيل في أي دورة بعد.</p>
+        <p> n'pas inscrire dans le course.</p>
     <?php endif; ?>
 </div>
 

@@ -338,7 +338,7 @@ class Cours
                     echo '<div class="tags-container"><span class="tag">Pas de tags</span></div>';
                 }
 
-                
+
                 echo '<form action="" method="post" class="enroll-form">
                         <input type="hidden" name="id" value="' . $course["course_id"] . '">
                         <button class="enroll-btn" name="inscrire">S\'inscrire</button>

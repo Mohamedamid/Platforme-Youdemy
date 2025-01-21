@@ -6,6 +6,7 @@ class User
     protected $email;
     protected $password;
     protected $role;
+    
     function __construct($username, $email, $password, $role)
     {
         $this->username = $username;

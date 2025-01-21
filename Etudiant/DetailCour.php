@@ -4,62 +4,57 @@ include_once("../classes/Cours.php");
 
 session_start();
 
-// Check if user is logged in and email exists in session
+
 if (isset($_SESSION['user_email'])) {
     $user_email = $_SESSION['user_email'];
     $role = 'Etudiant';
     $statut = 'Active';
 
-    // Fetch the user from the database
+    
     $sql = "SELECT user_id, email FROM user WHERE email = :email AND role = :role AND statut = :statut";
     $stmt = $conn->prepare($sql);
     $stmt->execute([':email' => $user_email, ':role' => $role, ':statut' => $statut]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Check if the user was found
+    
     if ($user) {
         $userId = $user['user_id'];
 
-        // Check if the course ID is posted
+        
         if (isset($_POST["id"])) {
             $courseId = $_POST["id"];
 
-            // Check if the user is already enrolled in the course
+            
             $stmt = $conn->prepare("SELECT * FROM enrollment WHERE user_id = :user_id AND course_id = :course_id");
             $stmt->execute([':user_id' => $userId, ':course_id' => $courseId]);
             if ($stmt->rowCount() > 0) {
-                echo "<script>alert('أنت مسجل بالفعل في هذه الدورة.');</script>";
+                echo "<script>alert('déja inscrire');</script>";
             } else {
-                // Insert the enrollment
+                
                 $stmt = $conn->prepare("INSERT INTO enrollment (user_id, course_id) VALUES (?, ?)");
                 $stmt->bindParam(1, $userId, PDO::PARAM_INT);
                 $stmt->bindParam(2, $courseId, PDO::PARAM_INT);
 
                 if ($stmt->execute()) {
-                    echo "<script>alert('تم التسجيل بنجاح!');</script>";
+                    echo "<script>alert('inscrire success');</script>";
                 } else {
-                    echo "<script>alert('حدث خطأ أثناء التسجيل.');</script>";
+                    echo "<script>alert('Error inscrire');</script>";
                 }
             }
         }
-
-        // Fetch the courses the user is enrolled in
         $sql = "SELECT c.* FROM course c
                 JOIN enrollment e ON c.course_id = e.course_id
                 WHERE e.user_id = :user_id";
         $stmt = $conn->prepare($sql);
         $stmt->execute([':user_id' => $userId]);
         $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
     } else {
         echo "<script>alert('لا يمكن العثور على المستخدم.');</script>";
     }
 } else {
     echo "<script>alert('لا يوجد مستخدم مسجل.');</script>";
 }
-
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -69,7 +64,6 @@ if (isset($_SESSION['user_email'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../assets/style/home.css">
     <title>Plateforme d'Apprentissage</title>
-
     <style>
         * {
             margin: 0;
@@ -214,7 +208,6 @@ if (isset($_SESSION['user_email'])) {
         }
     </style>
 </head>
-
 <body>
     <nav class="navbar">
         <div class="nav-container">
@@ -227,11 +220,9 @@ if (isset($_SESSION['user_email'])) {
             </ul>
         </div>
     </nav>
-
     <header class="header">
         <h1>Bienvenue dans la detail des cours auxquels vous êtes inscrit. </h1>
     </header>
-
     <div class="courses-container">
 
     </div>
@@ -245,8 +236,6 @@ if (isset($_SESSION['user_email'])) {
             });
         });
     </script>
-
     <script src="./assets/js/home.js"></script>
 </body>
-
 </html>
