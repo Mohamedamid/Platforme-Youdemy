@@ -18,29 +18,28 @@ if (isset($_POST["inscrire"])) {
         exit();
     } else {
         $userId = $user["user_id"];
-$idCourse = $_POST["id"];
-$stmt = $conn->prepare("SELECT * FROM enrollment WHERE user_id = :user_id AND course_id = :course_id");
-$stmt->execute([':user_id' => $userId, ':course_id' => $idCourse]);
+        $idCourse = $_POST["id"];
+        $stmt = $conn->prepare("SELECT * FROM enrollment WHERE user_id = :user_id AND course_id = :course_id");
+        $stmt->execute([':user_id' => $userId, ':course_id' => $idCourse]);
 
-if ($stmt->rowCount() > 0) {
+        if ($stmt->rowCount() > 0) {
 
-    echo "<script>alert('n'pas inscrire dans le course');</script>";
-} else {
+            echo "<script>alert('n'pas inscrire dans le course');</script>";
+        } else {
 
-    $stmt = $conn->prepare("INSERT INTO enrollment (user_id, course_id) VALUES (:user_id, :course_id)");
+            $stmt = $conn->prepare("INSERT INTO enrollment (user_id, course_id) VALUES (:user_id, :course_id)");
 
+            $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+            $stmt->bindParam(':course_id', $idCourse, PDO::PARAM_INT);
 
-    $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
-    $stmt->bindParam(':course_id', $idCourse, PDO::PARAM_INT);
+            if ($stmt->execute()) {
 
-    if ($stmt->execute()) {
-    
-        echo "<script>alert('inscrire success');</script>";
-    } else {
-    
-        echo "<script>alert('Error inscrire!');</script>";
-    }
-}
+                echo "<script>alert('inscrire success');</script>";
+            } else {
+
+                echo "<script>alert('Error inscrire!');</script>";
+            }
+        }
     }
 }
 
@@ -152,7 +151,7 @@ if ($stmt->rowCount() > 0) {
             background-color: #e0e0e0;
             padding: 6px 12px;
             border-radius: 20px;
-            margin:8px 8px 0 0;
+            margin: 8px 8px 0 0;
             font-size: 14px;
             color: #555;
         }
@@ -161,7 +160,6 @@ if ($stmt->rowCount() > 0) {
             position: absolute;
             bottom: 10px;
             width: 85%;
-            /* padding: 15px; */
             background-color: #fff;
             text-align: center;
             box-sizing: border-box;
@@ -191,14 +189,15 @@ if ($stmt->rowCount() > 0) {
             text-align: center;
             font-weight: bold;
         }
-.numberPage{
-    width: 100%;
-    height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-}
+
+        .numberPage {
+            width: 100%;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
     </style>
 </head>
 
@@ -234,37 +233,34 @@ if ($stmt->rowCount() > 0) {
             </ul>
         </div>
     </nav>
-
     <header class="header">
         <h1>Plateforme de Formation en Ligne</h1>
     </header>
 
     <div class="courses-container">
-    <?php
-    $pagenation = new Cours(null ,null, null, null);
-    if(isset($_GET["ofset"])){
-        $ofset = $_GET["ofset"];
-    }
-    else{
+        <?php
+        $pagenation = new Cours(null, null, null, null);
+        if (isset($_GET["ofset"])) {
+            $ofset = $_GET["ofset"];
+        } else {
+            $ofset = 0;
+        }
+        $pagenation->pagenation($conn, $ofset)
+            ?>
+    </div>
+    <div class="numberPage">
+        <?php
+        $cnt = new Cours(null, null, null, null);
+
+        $cntpage = ceil(intval($cnt->affichagetotal($conn)) / 3);
         $ofset = 0;
-    }
-    $pagenation->pagenation($conn ,$ofset)
-    ?>
-</div>
-<div class="numberPage">
-<?php 
-    $cnt = new Cours(null ,null , null ,null);
+        for ($i = 1; $i <= $cntpage; $i++) {
 
-    $cntpage = ceil(intval($cnt->affichagetotal($conn)) / 3);
-    $ofset = 0;
-    for ($i = 1; $i <= $cntpage; $i++) {
-
-        echo "<a href='?page=$i&ofset=$ofset' style='text-decoration: none;'>$i</a>";
-        $ofset +=3;
-    }
-?>
-
-</div>
+            echo "<a href='?page=$i&ofset=$ofset' style='text-decoration: none;'>$i</a>";
+            $ofset += 3;
+        }
+        ?>
+    </div>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var videos = document.querySelectorAll('video');
@@ -275,7 +271,6 @@ if ($stmt->rowCount() > 0) {
             });
         });
     </script>
-
     <script src="./assets/js/home.js"></script>
 </body>
 
