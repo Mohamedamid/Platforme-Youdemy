@@ -108,7 +108,7 @@
         <div class="nav-container">
             <a href="#" class="logo">Académie d'Apprentissage</a>
             <ul class="nav-links">
-                <li><a href="./index.php">Accueil</a></li>
+                <li><a href="../index.php">Accueil</a></li>
             </ul>
         </div>
     </nav>

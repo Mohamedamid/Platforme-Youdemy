@@ -1,17 +1,17 @@
 <?php
-include_once("./config/config.php");
-include_once("./classes/Users.php");
-include_once("./classes/Etudiant.php");
-include_once("./classes/Enseignant.php");
-include_once("./classes/Cours.php");
-include_once("./classes/Categorie.php");
-include_once("./classes/Tag.php");
-include_once("./classes/Admin.php");
+include_once("../config/config.php");
+include_once("../classes/Users.php");
+include_once("../classes/Etudiant.php");
+include_once("../classes/Enseignant.php");
+include_once("../classes/Cours.php");
+include_once("../classes/Categorie.php");
+include_once("../classes/Tag.php");
+include_once("../classes/Admin.php");
 
 session_start();
 
 if (!isset($_SESSION['user_email'])) {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit();
 }
 
@@ -23,7 +23,7 @@ $stmt->execute([':email' => $user_email]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$user || $user['role'] != 'Admin') {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit();
 }
 if (isset($_GET["idEdit"])) {
@@ -45,7 +45,7 @@ if (isset($_GET["idEdit"])) {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>Académie d'Apprentissage</title>
     <!-- ======= Styles ====== -->
-    <link rel="stylesheet" href="./assets/style/dashboard.css">
+    <link rel="stylesheet" href="../assets/style/dashboard.css">
     <style>
         #platformStatsChart,
         #platformStatsChart1 {
@@ -204,7 +204,7 @@ if (isset($_GET["idEdit"])) {
                     </a>
                 </li>
                 <li>
-                    <a href="logout.php">
+                    <a href="../logout.php">
                         <span class="icon">
                             <ion-icon name="log-out-outline"></ion-icon>
                         </span>
@@ -227,7 +227,7 @@ if (isset($_GET["idEdit"])) {
                 </div>
                 <div style="display: flex;align-items: center;">
                     <p>Admin</p>
-                    <img src="./assets/image/admin.jpg" style="width: 50px;height: 50px;" alt="">
+                    <img src="../assets/image/admin.jpg" style="width: 50px;height: 50px;" alt="">
                 </div>
             </div>
             <!-- ======================= Cards ================== -->
@@ -419,7 +419,7 @@ if (isset($_GET["idEdit"])) {
             });
         </script>
 
-        <script src="./assets/js/script.js?v=1"></script>
+        <script src="../assets/js/script.js?v=1"></script>
         <!-- ====== ionicons ======= -->
         <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
         <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>

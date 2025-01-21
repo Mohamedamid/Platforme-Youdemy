@@ -34,11 +34,11 @@ if (isset($_POST["submit"])) {
     $type = $_POST['content_type'];
     $categorie = $_POST['categorie'];
     $tags = $_POST['tags'];
-    // if (isset($_POST['tags']) && is_array($_POST['tags'])) {
-    //     $tags = $_POST['tags'];
-    // } else {
-    //     $tags = [];
-    // }
+    if (isset($_POST['tags']) && is_array($_POST['tags'])) {
+        $tags = $_POST['tags'];
+    } else {
+        $tags = [];
+    }
 
     $aj = new Cours($title, $description, $url, $categorie);
     $aj->AjouterCours($conn, $tags, $type);

@@ -1,50 +1,65 @@
 <?php
-include_once("./config/config.php");
-include_once("./classes/Cours.php");
+include_once("../config/config.php");
+include_once("../classes/Cours.php");
 
 session_start();
 
-if (isset($_POST["inscrire"])) {
+// Check if user is logged in and email exists in session
+if (isset($_SESSION['user_email'])) {
     $user_email = $_SESSION['user_email'];
     $role = 'Etudiant';
     $statut = 'Active';
-    $sql = "SELECT user_id, username, email, role, statut FROM user WHERE email = :email AND role = :role AND statut = :statut";
+
+    // Fetch the user from the database
+    $sql = "SELECT user_id, email FROM user WHERE email = :email AND role = :role AND statut = :statut";
     $stmt = $conn->prepare($sql);
     $stmt->execute([':email' => $user_email, ':role' => $role, ':statut' => $statut]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$user || $user['role'] != 'Etudiant' || $user['statut'] != 'Active') {
-        header("Location: login.php");
-        exit();
-    } else {
-        $userId = $user["user_id"];
-$idCourse = $_POST["id"]; // تأكد من أن المتغير هو $idCourse وليس $idCoure
-$stmt = $conn->prepare("SELECT * FROM enrollment WHERE user_id = :user_id AND course_id = :course_id");
-$stmt->execute([':user_id' => $userId, ':course_id' => $idCourse]); // تأكد من استخدام $idCourse هنا
+    // Check if the user was found
+    if ($user) {
+        $userId = $user['user_id'];
 
-if ($stmt->rowCount() > 0) {
-    // إذا كان المستخدم مسجلًا بالفعل في الدورة
-    echo "<script>alert('أنت مسجل بالفعل في هذه الدورة.');</script>";
+        // Check if the course ID is posted
+        if (isset($_POST["id"])) {
+            $courseId = $_POST["id"];
+
+            // Check if the user is already enrolled in the course
+            $stmt = $conn->prepare("SELECT * FROM enrollment WHERE user_id = :user_id AND course_id = :course_id");
+            $stmt->execute([':user_id' => $userId, ':course_id' => $courseId]);
+            if ($stmt->rowCount() > 0) {
+                echo "<script>alert('أنت مسجل بالفعل في هذه الدورة.');</script>";
+            } else {
+                // Insert the enrollment
+                $stmt = $conn->prepare("INSERT INTO enrollment (user_id, course_id) VALUES (?, ?)");
+                $stmt->bindParam(1, $userId, PDO::PARAM_INT);
+                $stmt->bindParam(2, $courseId, PDO::PARAM_INT);
+
+                if ($stmt->execute()) {
+                    echo "<script>alert('تم التسجيل بنجاح!');</script>";
+                } else {
+                    echo "<script>alert('حدث خطأ أثناء التسجيل.');</script>";
+                }
+            }
+        }
+
+        // Fetch the courses the user is enrolled in
+        $sql = "SELECT c.* FROM course c
+                JOIN enrollment e ON c.course_id = e.course_id
+                WHERE e.user_id = :user_id";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([':user_id' => $userId]);
+        $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    } else {
+        echo "<script>alert('لا يمكن العثور على المستخدم.');</script>";
+    }
 } else {
-    // إذا لم يكن مسجلًا، نقوم بإضافة التسجيل
-    $stmt = $conn->prepare("INSERT INTO enrollment (user_id, course_id) VALUES (:user_id, :course_id)");
-
-    // استخدم bindParam بشكل صحيح
-    $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
-    $stmt->bindParam(':course_id', $idCourse, PDO::PARAM_INT);
-
-    if ($stmt->execute()) {
-        // إذا تم التسجيل بنجاح
-        echo "<script>alert('تم التسجيل بنجاح!');</script>";
-    } else {
-        // إذا حدث خطأ أثناء التسجيل
-        echo "<script>alert('حدث خطأ أثناء التسجيل.');</script>";
-    }
-}
-    }
+    echo "<script>alert('لا يوجد مستخدم مسجل.');</script>";
 }
 
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -52,7 +67,7 @@ if ($stmt->rowCount() > 0) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./assets/style/home.css">
+    <link rel="stylesheet" href="../assets/style/home.css">
     <title>Plateforme d'Apprentissage</title>
 
     <style>
@@ -65,10 +80,8 @@ if ($stmt->rowCount() > 0) {
 
         body {
             background-color: #f4f7fc;
-
         }
 
-        /* تحسين تصميم البطاقة */
         .courses-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -84,7 +97,7 @@ if ($stmt->rowCount() > 0) {
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             position: relative;
-            height: auto;
+            height: 550px;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
@@ -145,7 +158,6 @@ if ($stmt->rowCount() > 0) {
 
         .tags-container {
             margin-top: 15px;
-            height: 125px;
         }
 
         .tag {
@@ -153,7 +165,7 @@ if ($stmt->rowCount() > 0) {
             background-color: #e0e0e0;
             padding: 6px 12px;
             border-radius: 20px;
-            margin:8px 8px 0 0;
+            margin: 8px 8px 0 0;
             font-size: 14px;
             color: #555;
         }
@@ -162,7 +174,6 @@ if ($stmt->rowCount() > 0) {
             position: absolute;
             bottom: 10px;
             width: 85%;
-            /* padding: 15px; */
             background-color: #fff;
             text-align: center;
             box-sizing: border-box;
@@ -192,14 +203,15 @@ if ($stmt->rowCount() > 0) {
             text-align: center;
             font-weight: bold;
         }
-.numberPage{
-    width: 100%;
-    height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-}
+
+        .numberPage {
+            width: 100%;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
     </style>
 </head>
 
@@ -209,63 +221,20 @@ if ($stmt->rowCount() > 0) {
             <a href="#" class="logo">Académie d'Apprentissage</a>
             <button class="nav-toggle" onclick="toggleNav()">☰</button>
             <ul class="nav-links" id="navLinks">
-                <li><a href="./home.php">Accueil</a></li>
-                <?php
-                if (isset($_SESSION['user_email'])) {
-
-                    $user_email = $_SESSION['user_email'];
-                    $role = 'Etudiant';
-                    $statut = 'Active';
-
-                    $sql = "SELECT role, statut FROM user WHERE email = :email";
-                    $stmt = $conn->prepare($sql);
-                    $stmt->execute([':email' => $user_email]);
-                    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-                    if ($user && $user['role'] == $role && $user['statut'] == $statut) {
-                        echo '<li><a href="./Etudiant/MyCourse.php">Cours</a></li>
-                            <li class="nav-item"><a class="nav-link" href="./logout.php">Déconnexion</a></li>';
-                    } else {
-                        echo '<li class="nav-item"><a class="nav-link" href="./login.php">Connexion</a></li>';
-                    }
-                } else {
-                    echo '<li class="nav-item"><a class="nav-link" href="./login.php">Connexion</a></li>';
-                }
-                ?>
+                <li><a href="../home.php">Accueil</a></li>
+                <li><a href="./MyCourse.php">Cours</a></li>
+                <li class="nav-item"><a class="nav-link" href="../logout.php">Déconnexion</a></li>
             </ul>
         </div>
     </nav>
 
     <header class="header">
-        <h1>Plateforme de Formation en Ligne</h1>
+        <h1>Bienvenue dans la detail des cours auxquels vous êtes inscrit. </h1>
     </header>
 
     <div class="courses-container">
-    <?php
-    $pagenation = new Cours(null ,null, null, null);
-    if(isset($_GET["ofset"])){
-        $ofset = $_GET["ofset"];
-    }
-    else{
-        $ofset = 0;
-    }
-    $pagenation->pagenation($conn ,$ofset)
-    ?>
-</div>
-<div class="numberPage">
-<?php 
-    $cnt = new Cours(null ,null , null ,null);
 
-    $cntpage = ceil(intval($cnt->affichagetotal($conn)) / 3);
-    $ofset = 0;
-    for ($i = 1; $i <= $cntpage; $i++) {
-
-        echo "<a href='?page=$i&ofset=$ofset' style='text-decoration: none;'>$i</a>";
-        $ofset +=3;
-    }
-?>
-
-</div>
+    </div>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var videos = document.querySelectorAll('video');

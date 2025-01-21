@@ -1,17 +1,17 @@
 <?php
-include_once("./config/config.php");
-include_once("./classes/Users.php");
-include_once("./classes/Etudiant.php");
-include_once("./classes/Enseignant.php");
-include_once("./classes/Cours.php");
-include_once("./classes/Categorie.php");
-include_once("./classes/Tag.php");
-include_once("./classes/Admin.php");
+include_once("../config/config.php");
+include_once("../classes/Users.php");
+include_once("../classes/Etudiant.php");
+include_once("../classes/Enseignant.php");
+include_once("../classes/Cours.php");
+include_once("../classes/Categorie.php");
+include_once("../classes/Tag.php");
+include_once("../classes/Admin.php");
 
 session_start();
 
 if (!isset($_SESSION['user_email'])) {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit();
 }
 
@@ -23,16 +23,51 @@ $stmt->execute([':email' => $user_email]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$user || $user['role'] != 'Admin') {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit();
 }
 
-if (isset($_GET["idEdit"])) {
-    $idd = $_GET["idEdit"];
-    $statut = $_GET["statut"];
+if (isset($_POST["submit"])) {
 
-    $Stat = new Admin(null, null, null);
-    $Stat->updateStatut($conn, $idd, $statut);
+    $name = $_POST["name"];
+    $discription = $_POST["description"];
+
+    $aj = new Categorie($name, $discription);
+    $aj->AjouterCategorie($conn);
+    header("location:gestionCategorie.php");
+}
+
+if (isset($_GET["Edit"])) {
+    $id = $_GET["Edit"];
+    $query = "SELECT * FROM category WHERE category_id = :id";
+    $stmt = $conn->prepare($query);
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    $stmt->execute();
+    $categorie = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $name = $categorie["name"];
+    $description = $categorie["description"];
+
+}
+
+if (isset($_POST["Edit"])) {
+    $id = $_GET["Edit"];
+    $name = $_POST["name"];
+    $discription = $_POST["description"];
+
+    $edit = new Categorie($name, $discription);
+    $edit->editCategorie($conn, $id);
+    header("location:gestionCategorie.php");
+}
+
+if (isset($_GET["Delet"])) {
+    $id = $_GET["Delet"];
+    $Delet = new Categorie(null, null);
+    $Delet->deletCategorie($conn, $id);
+}
+
+if (isset($_POST["reset"])) {
+    header("location:gestionCategorie.php");
 }
 ?>
 
@@ -46,85 +81,76 @@ if (isset($_GET["idEdit"])) {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>Académie d'Apprentissage</title>
     <!-- ======= Styles ====== -->
-    <link rel="stylesheet" href="./assets/style/dashboard.css">
+    <link rel="stylesheet" href="../assets/style/dashboard.css">
+    <link rel="stylesheet" href="../assets/style/gestionCour.css">
     <style>
-        table * {
-            text-align: center !important;
-            border: 1px solid black;
-        }
-
-        .idproduit {
-            display: none;
-        }
-
-        td {
-            padding: 15px;
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
+
             margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
         }
 
-        table,
-        th,
-        td {
-            border: 1px solid #ddd;
-        }
-
-        th,
-        td {
-            padding: 10px;
-            text-align: center;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        tr:hover {
-            background-color: #e9e9e9;
-        }
-
-        .status-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .status-link {
-            padding: 5px 10px;
-            text-decoration: none;
-            border-radius: 5px;
+        thead {
+            background-color: #f4f4f4;
             font-weight: bold;
         }
 
-        .status-link:hover {
-            opacity: 0.8;
+        thead td {
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            color: #333;
         }
 
-        .active-link {
+        tbody td {
+            padding: 12px;
+            text-align: center;
+            font-size: 14px;
+            color: #555;
+            border-bottom: 1px solid #ddd;
+
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+
+        tbody .action-links a {
+            padding: 6px 12px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 0 5px;
+            font-weight: bold;
+        }
+
+        .action-links .edit {
             background-color: #4CAF50;
             color: white;
         }
 
-        .active-link:hover {
+        .action-links .edit:hover {
             background-color: #45a049;
         }
 
-        .disactive-link {
+        .action-links .delete {
             background-color: #f44336;
             color: white;
         }
 
-        .disactive-link:hover {
+        .action-links .delete:hover {
             background-color: #e53935;
         }
 
-        th {
-            background-color: #f1f1f1;
-            font-weight: bold;
+        .action-links {
+            text-align: center;
         }
     </style>
 </head>
@@ -158,7 +184,7 @@ if (isset($_GET["idEdit"])) {
                         <span class="title">Les enseignants</span>
                     </a>
                 </li>
-                <li class="hovered">
+                <li>
                     <a href="gestionEtudiant.php">
                         <span class="icon">
                             <ion-icon name="school-outline"></ion-icon>
@@ -166,7 +192,7 @@ if (isset($_GET["idEdit"])) {
                         <span class="title">Les etudiants</span>
                     </a>
                 </li>
-                <li>
+                <li class="hovered">
                     <a href="gestionCategorie.php">
                         <span class="icon">
                             <ion-icon name="book-outline"></ion-icon>
@@ -183,7 +209,7 @@ if (isset($_GET["idEdit"])) {
                     </a>
                 </li>
                 <li>
-                    <a href="logout.php">
+                    <a href="../logout.php">
                         <span class="icon">
                             <ion-icon name="log-out-outline"></ion-icon>
                         </span>
@@ -206,59 +232,51 @@ if (isset($_GET["idEdit"])) {
                 </div>
                 <div style="display: flex;align-items: center;">
                     <p>Admin</p>
-                    <img src="./assets/image/admin.jpg" style="width: 50px;height: 50px;" alt="">
-                </div>
-            </div>
-            <div class="cardBox">
-                <div class="card">
-                    <div>
-                        <div class="numbers">
-                            <?php
-                            $enseignants = new Admin(null, null, null);
-                            $enseignants->affichagetotalE($conn ,'Etudiant' ,'Disactive');
-                            ?>
-                            <div class="cardName">Les Disactives</div>
-                        </div>
-                    </div>
-                    <div class="iconBx">
-                        <ion-icon name="people-outline"></ion-icon>
-                    </div>
-                </div>
-                <div class="card">
-                    <div>
-                        <div class="numbers">
-                            <?php
-                            $enseignants = new Admin(null, null, null);
-                            $enseignants->affichagetotalE($conn ,'Etudiant' ,'Active');
-                            ?>
-                        </div>
-                        <div class="cardName">Les Actives</div>
-                    </div>
-                    <div class="iconBx">
-                        <ion-icon name="school-outline"></ion-icon>
-                    </div>
+                    <img src="../assets/image/admin.jpg" style="width: 50px;height: 50px;" alt="">
                 </div>
             </div>
             <!-- ================ Details List ================= -->
             <div class="details">
+                <form action="" method="post">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="name">Categorie:</label>
+                            <input type="text" id="name" name="name"
+                                value="<?php echo isset($name) ? htmlspecialchars($name) : ''; ?>" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description:</label>
+                            <textarea id="description" name="description" required>
+                                <?php echo isset($description) ? htmlspecialchars($description) : ''; ?>
+                            </textarea>
+                        </div>
+                        <div class="form-group">
+                            <?php
+                            if (isset($_GET['Edit'])) {
+                                echo '<input type="submit" name="Edit" value="Edit Categorie" class="btn">';
+                            } else {
+                                echo '<input type="submit" name="submit" value="Submit Categorie" class="btn">';
+                            }
+                            ?>
+                        </div>
+                    </div>
+                </form>
                 <div class="cardHeader">
-                    <h2>Les Etudiants</h2>
+                    <h2>Les categories</h2>
                 </div>
                 <table>
                     <thead>
                         <tr>
-                            <!-- <td>id</td> -->
-                            <td>Name</td>
-                            <td>email</td>
-                            <td>statut</td>
-                            <td>date inscription</td>
-                            <td>action</td>
+                            <td class="idproduit">id</td>
+                            <td>Categorie</td>
+                            <td>Description</td>
+                            <td>Action</td>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
-                        $etudiant = new Admin(null, null, null);
-                        $etudiant->affichageEtudiant($conn);
+                        $p = new Categorie(null, null);
+                        $p->affichageCategorie($conn);
                         ?>
                     </tbody>
                 </table>
@@ -267,7 +285,7 @@ if (isset($_GET["idEdit"])) {
     </div>
     </div>
     <!-- =========== Scripts =========  -->
-    <script src="./assets/js/script.js?v=1"></script>
+    <script src="../assets/js/script.js?v=1"></script>
     <!-- ====== ionicons ======= -->
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>

@@ -31,7 +31,7 @@ class User
 
                 if ($user['role'] == 'Admin') {
 
-                    header("Location: ../dashboard.php");
+                    header("Location: ../Admin/dashboard.php");
                     exit();
                 } elseif ($user['role'] == 'Etudiant') {
                     header("Location: ../home.php");
@@ -41,10 +41,10 @@ class User
                         header("Location: ../Enseignant/index.php");
                         exit();
                     } elseif ($user['statut'] == 'Verification') {
-                        header("Location: ../PageVerification.php");
+                        header("Location: ../Enseignant/PageVerification.php");
                         exit();
                     } elseif ($user['statut'] == 'Disactive') {
-                        header("Location: ../PageBloque.php");
+                        header("Location: ../Enseignant/PageBloque.php");
                         exit();
                     }
                 }
